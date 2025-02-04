@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package qstnnr;
+
+option go_package = "github.com/mateopresacastro/qstnnr/api";
+
+service Questionnaire {
+    // GetQuestions gets all the questions and options for each.
+    rpc GetQuestions(GetQuestionsRequest) returns(GetQuestionsResponse);
+    // SubmitAnswers submits the answers to be evaluated.
+    rpc SubmitAnswers(SubmitAnswersRequest) returns(SubmitAnswersResponse);
+    // GetSolutons gets all solutions if the user wants to check them in isolation.
+    rpc GetSolutions(GetSolutionsRequest) returns(GetSolutionsResponse);
+   }
+
+message GetQuestionsRequest {}
+
+message GetQuestionsResponse {
+    repeated Question questions = 1;
+}
+
+message Question {
+    int32 id = 1;
+    string question = 2;
+    repeated Option options = 3;
+}
+
+message Option {
+    int32 id = 1;
+    string option = 2;
+}
+
+message SubmitAnswersRequest {
+    repeated Answer answers = 1;
+}
+
+message Answer {
+    int32 qustion_id = 1;
+    int32 option_id = 2;
+}
+
+message SubmitAnswersResponse {
+    repeated Solution solutions = 1;
+    int64 stats = 2;
+}
+
+message Solution {
+    Question question = 1;
+    int32 correct_option_id = 2;
+    string correct_option = 3;
+}
+
+message GetSolutionsRequest {}
+
+message GetSolutionsResponse {
+    repeated Solution solutions = 1;
+}
+
+
