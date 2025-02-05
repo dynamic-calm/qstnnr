@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -29,11 +30,11 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QuestionnaireClient interface {
 	// GetQuestions gets all the questions and options for each.
-	GetQuestions(ctx context.Context, in *GetQuestionsRequest, opts ...grpc.CallOption) (*GetQuestionsResponse, error)
+	GetQuestions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetQuestionsResponse, error)
 	// SubmitAnswers submits the answers to be evaluated.
 	SubmitAnswers(ctx context.Context, in *SubmitAnswersRequest, opts ...grpc.CallOption) (*SubmitAnswersResponse, error)
 	// GetSolutons gets all solutions if the user wants to check them in isolation.
-	GetSolutions(ctx context.Context, in *GetSolutionsRequest, opts ...grpc.CallOption) (*GetSolutionsResponse, error)
+	GetSolutions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSolutionsResponse, error)
 }
 
 type questionnaireClient struct {
@@ -44,7 +45,7 @@ func NewQuestionnaireClient(cc grpc.ClientConnInterface) QuestionnaireClient {
 	return &questionnaireClient{cc}
 }
 
-func (c *questionnaireClient) GetQuestions(ctx context.Context, in *GetQuestionsRequest, opts ...grpc.CallOption) (*GetQuestionsResponse, error) {
+func (c *questionnaireClient) GetQuestions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetQuestionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetQuestionsResponse)
 	err := c.cc.Invoke(ctx, Questionnaire_GetQuestions_FullMethodName, in, out, cOpts...)
@@ -64,7 +65,7 @@ func (c *questionnaireClient) SubmitAnswers(ctx context.Context, in *SubmitAnswe
 	return out, nil
 }
 
-func (c *questionnaireClient) GetSolutions(ctx context.Context, in *GetSolutionsRequest, opts ...grpc.CallOption) (*GetSolutionsResponse, error) {
+func (c *questionnaireClient) GetSolutions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSolutionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetSolutionsResponse)
 	err := c.cc.Invoke(ctx, Questionnaire_GetSolutions_FullMethodName, in, out, cOpts...)
@@ -79,11 +80,11 @@ func (c *questionnaireClient) GetSolutions(ctx context.Context, in *GetSolutions
 // for forward compatibility.
 type QuestionnaireServer interface {
 	// GetQuestions gets all the questions and options for each.
-	GetQuestions(context.Context, *GetQuestionsRequest) (*GetQuestionsResponse, error)
+	GetQuestions(context.Context, *emptypb.Empty) (*GetQuestionsResponse, error)
 	// SubmitAnswers submits the answers to be evaluated.
 	SubmitAnswers(context.Context, *SubmitAnswersRequest) (*SubmitAnswersResponse, error)
 	// GetSolutons gets all solutions if the user wants to check them in isolation.
-	GetSolutions(context.Context, *GetSolutionsRequest) (*GetSolutionsResponse, error)
+	GetSolutions(context.Context, *emptypb.Empty) (*GetSolutionsResponse, error)
 	mustEmbedUnimplementedQuestionnaireServer()
 }
 
@@ -94,13 +95,13 @@ type QuestionnaireServer interface {
 // pointer dereference when methods are called.
 type UnimplementedQuestionnaireServer struct{}
 
-func (UnimplementedQuestionnaireServer) GetQuestions(context.Context, *GetQuestionsRequest) (*GetQuestionsResponse, error) {
+func (UnimplementedQuestionnaireServer) GetQuestions(context.Context, *emptypb.Empty) (*GetQuestionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetQuestions not implemented")
 }
 func (UnimplementedQuestionnaireServer) SubmitAnswers(context.Context, *SubmitAnswersRequest) (*SubmitAnswersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitAnswers not implemented")
 }
-func (UnimplementedQuestionnaireServer) GetSolutions(context.Context, *GetSolutionsRequest) (*GetSolutionsResponse, error) {
+func (UnimplementedQuestionnaireServer) GetSolutions(context.Context, *emptypb.Empty) (*GetSolutionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSolutions not implemented")
 }
 func (UnimplementedQuestionnaireServer) mustEmbedUnimplementedQuestionnaireServer() {}
@@ -125,7 +126,7 @@ func RegisterQuestionnaireServer(s grpc.ServiceRegistrar, srv QuestionnaireServe
 }
 
 func _Questionnaire_GetQuestions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetQuestionsRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -137,7 +138,7 @@ func _Questionnaire_GetQuestions_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: Questionnaire_GetQuestions_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QuestionnaireServer).GetQuestions(ctx, req.(*GetQuestionsRequest))
+		return srv.(QuestionnaireServer).GetQuestions(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -161,7 +162,7 @@ func _Questionnaire_SubmitAnswers_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _Questionnaire_GetSolutions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetSolutionsRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -173,7 +174,7 @@ func _Questionnaire_GetSolutions_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: Questionnaire_GetSolutions_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QuestionnaireServer).GetSolutions(ctx, req.(*GetSolutionsRequest))
+		return srv.(QuestionnaireServer).GetSolutions(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
