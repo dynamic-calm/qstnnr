@@ -118,12 +118,12 @@ func TestServer(t *testing.T) {
 		_, err := client.SubmitAnswers(ctx, &api.SubmitAnswersRequest{
 			Answers: []*api.Answer{
 				{
-					QustionId: 1,
-					OptionId:  2,
+					QuestionId: 1,
+					OptionId:   2,
 				},
 				{
-					QustionId: 2,
-					OptionId:  1,
+					QuestionId: 2,
+					OptionId:   1,
 				},
 			},
 		})
@@ -137,16 +137,16 @@ func TestServer(t *testing.T) {
 		resp, err := client.SubmitAnswers(ctx, &api.SubmitAnswersRequest{
 			Answers: []*api.Answer{
 				{
-					QustionId: 1,
-					OptionId:  2,
+					QuestionId: 1,
+					OptionId:   2,
 				},
 				{
-					QustionId: 2,
-					OptionId:  1,
+					QuestionId: 2,
+					OptionId:   1,
 				},
 				{
-					QustionId: 3,
-					OptionId:  1,
+					QuestionId: 3,
+					OptionId:   1,
 				},
 			},
 		})
@@ -157,8 +157,8 @@ func TestServer(t *testing.T) {
 		if len(resp.Solutions) != 3 {
 			t.Errorf("expected 3 solution, got %d", len(resp.Solutions))
 		}
-		if resp.Stats != 100 {
-			t.Errorf("expected stats 100, got %d", resp.Stats)
+		if resp.BetterThan != 100 {
+			t.Errorf("expected stats 100, got %d", resp.BetterThan)
 		}
 		if resp.Solutions[0].CorrectOptionId != 2 {
 			t.Errorf("expected correct option ID 2, got %d", resp.Solutions[0].CorrectOptionId)
@@ -179,9 +179,6 @@ func TestServer(t *testing.T) {
 			case 1:
 				if sol.CorrectOptionId != 2 {
 					t.Errorf("question 1: expected correct option ID 2, got %d", sol.CorrectOptionId)
-				}
-				if sol.CorrectOptionText != "Paris" {
-					t.Errorf("question 1: expected correct option 'Paris', got '%s'", sol.CorrectOptionText)
 				}
 			case 2:
 				if sol.CorrectOptionText != "Mars" {

@@ -6,28 +6,36 @@ import (
 	"math"
 )
 
+// QService defines the questionnaire operations.
 type QService interface {
 	GetQuestions() (map[QuestionID]Question, error)
 	SubmitAnswers(answers map[QuestionID]OptionID) (*SubmitResult, error)
 	GetSolutions() (map[QuestionID]OptionID, error)
 }
 
+// QstnnrService implements QService using a persistent store.
 type QstnnrService struct {
 	store Store
 }
 
+// SubmitResult contains a map of questions and their correct options,
+// and the user's percentile ranking.
 type SubmitResult struct {
 	Solutions map[QuestionID]OptionID
 	Stat      Stat
 }
+
+// SubmitResult contains quiz submission results and ranking.
 type ServiceError struct {
 	error
 }
 
+// NewQstnnrService creates a new questionnaire service.
 func NewQstnnrService(store Store) QService {
 	return &QstnnrService{store: store}
 }
 
+// GetQuestions returns all available questions.
 func (qs *QstnnrService) GetQuestions() (map[QuestionID]Question, error) {
 	questions, err := qs.store.GetQuestions()
 	if err != nil {
@@ -40,6 +48,7 @@ func (qs *QstnnrService) GetQuestions() (map[QuestionID]Question, error) {
 	return questions, nil
 }
 
+// SubmitAnswers processes a questionnaire submission and returns results.
 func (qs *QstnnrService) SubmitAnswers(answers map[QuestionID]OptionID) (*SubmitResult, error) {
 	if len(answers) == 0 {
 		return nil, ServiceError{errors.New("no answers provided")}
@@ -96,6 +105,7 @@ func (qs *QstnnrService) SubmitAnswers(answers map[QuestionID]OptionID) (*Submit
 	return &SubmitResult{Solutions: solutions, Stat: stat}, nil
 }
 
+// stats calculates the percentile ranking for a score.
 func (qs *QstnnrService) stats(score Score) (Stat, error) {
 	scores, err := qs.store.GetAllScores()
 	if err != nil {
@@ -117,6 +127,7 @@ func (qs *QstnnrService) stats(score Score) (Stat, error) {
 	return Stat(math.Round(percentage)), nil
 }
 
+// GetSolutions returns the correct answers for all questions.
 func (qs *QstnnrService) GetSolutions() (map[QuestionID]OptionID, error) {
 	solutions, err := qs.store.GetSolutions()
 	if err != nil {

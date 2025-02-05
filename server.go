@@ -14,17 +14,20 @@ import (
 // To assert implementation
 var _ api.QuestionnaireServer = (*server)(nil)
 
+// server implements the gRPC questionnaire service.
 type server struct {
 	api.QuestionnaireServer
 	service QService
 	logger  *slog.Logger
 }
 
+// ServerConfig holds the configuration for the gRPC server.
 type ServerConfig struct {
 	Logger  *slog.Logger
 	Service QService
 }
 
+// NewServer creates a new gRPC server with the given configuration.
 func NewServer(cfg *ServerConfig) (*grpc.Server, error) {
 	server := &server{service: cfg.Service, logger: cfg.Logger}
 	grpcsrv := grpc.NewServer()
@@ -32,6 +35,7 @@ func NewServer(cfg *ServerConfig) (*grpc.Server, error) {
 	return grpcsrv, nil
 }
 
+// GetQuestions returns all questions with their options.
 func (s *server) GetQuestions(ctx context.Context, _ *emptypb.Empty) (*api.GetQuestionsResponse, error) {
 	qsts, err := s.service.GetQuestions()
 	if err != nil {
@@ -54,10 +58,11 @@ func (s *server) GetQuestions(ctx context.Context, _ *emptypb.Empty) (*api.GetQu
 	return &api.GetQuestionsResponse{Questions: questions}, nil
 }
 
+// SubmitAnswers processes submitted answers and returns results with statistics.
 func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersRequest) (*api.SubmitAnswersResponse, error) {
 	answers := make(map[QuestionID]OptionID)
 	for _, a := range req.Answers {
-		answers[QuestionID(a.QustionId)] = OptionID(a.OptionId)
+		answers[QuestionID(a.QuestionId)] = OptionID(a.OptionId)
 	}
 	result, err := s.service.SubmitAnswers(answers)
 	if err != nil {
@@ -84,9 +89,10 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 		solutions = append(solutions, s)
 	}
 
-	return &api.SubmitAnswersResponse{Solutions: solutions, Stats: int64(result.Stat)}, nil
+	return &api.SubmitAnswersResponse{Solutions: solutions, BetterThan: int64(result.Stat)}, nil
 }
 
+// GetSolutions returns the correct answers for all questions.
 func (s *server) GetSolutions(ctx context.Context, req *emptypb.Empty) (*api.GetSolutionsResponse, error) {
 	solutions, err := s.service.GetSolutions()
 	if err != nil {
@@ -105,6 +111,7 @@ func (s *server) GetSolutions(ctx context.Context, req *emptypb.Empty) (*api.Get
 	return &api.GetSolutionsResponse{Solutions: processed}, nil
 }
 
+// processSolutions converts internal solution format to API response format.
 func (s *server) processSolutions(ss map[QuestionID]OptionID) ([]*api.Solution, error) {
 	qsts, err := s.service.GetQuestions()
 	if err != nil {
@@ -122,6 +129,8 @@ func (s *server) processSolutions(ss map[QuestionID]OptionID) ([]*api.Solution, 
 	return processed, nil
 }
 
+// reportBug logs unexpected errors for debugging. Here we could send this bug to a
+// centralized destination.
 func (s *server) reportBug(err error) {
 	s.logger.Error("there was an unnespected issue; please report this as a bug", "err", err)
 }
