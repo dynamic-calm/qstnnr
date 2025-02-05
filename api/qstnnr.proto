@@ -1,19 +1,20 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 package qstnnr;
 
 option go_package = "github.com/mateopresacastro/qstnnr/api";
 
 service Questionnaire {
     // GetQuestions gets all the questions and options for each.
-    rpc GetQuestions(GetQuestionsRequest) returns(GetQuestionsResponse);
+    rpc GetQuestions(google.protobuf.Empty) returns(GetQuestionsResponse);
     // SubmitAnswers submits the answers to be evaluated.
     rpc SubmitAnswers(SubmitAnswersRequest) returns(SubmitAnswersResponse);
     // GetSolutons gets all solutions if the user wants to check them in isolation.
-    rpc GetSolutions(GetSolutionsRequest) returns(GetSolutionsResponse);
+    rpc GetSolutions(google.protobuf.Empty) returns(GetSolutionsResponse);
    }
 
-message GetQuestionsRequest {}
 
 message GetQuestionsResponse {
     repeated Question questions = 1;
@@ -21,13 +22,13 @@ message GetQuestionsResponse {
 
 message Question {
     int32 id = 1;
-    string question = 2;
+    string text = 2;
     repeated Option options = 3;
 }
 
 message Option {
     int32 id = 1;
-    string option = 2;
+    string text = 2;
 }
 
 message SubmitAnswersRequest {
@@ -35,22 +36,20 @@ message SubmitAnswersRequest {
 }
 
 message Answer {
-    int32 qustion_id = 1;
+    int32 question_id = 1;
     int32 option_id = 2;
 }
 
 message SubmitAnswersResponse {
     repeated Solution solutions = 1;
-    int64 stats = 2;
+    int32 better_than = 2;
 }
 
 message Solution {
     Question question = 1;
     int32 correct_option_id = 2;
-    string correct_option = 3;
+    string correct_option_text = 3;
 }
-
-message GetSolutionsRequest {}
 
 message GetSolutionsResponse {
     repeated Solution solutions = 1;
