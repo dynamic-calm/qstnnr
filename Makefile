@@ -10,3 +10,7 @@ compile:
 .PHONY: test
 test:
 	go test -cover -race -v ./...
+
+.PHONY: start-server
+start-server:
+	go run cmd/server/main.go
