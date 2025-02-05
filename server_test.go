@@ -2,6 +2,7 @@ package qstnnr_test
 
 import (
 	"context"
+	"log/slog"
 	"net"
 	"testing"
 
@@ -70,7 +71,19 @@ func TestServer(t *testing.T) {
 		Solutions: solutions,
 	}
 
-	server, err := qstnnr.NewServer(data)
+	store, err := qstnnr.NewMemoryStore(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	service := qstnnr.NewQstnnrService(store)
+
+	cfg := &qstnnr.ServerConfig{
+		Logger:  slog.Default(),
+		Service: service,
+	}
+
+	server, err := qstnnr.NewServer(cfg)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -160,11 +173,27 @@ func TestServer(t *testing.T) {
 		if len(resp.Solutions) != 3 {
 			t.Errorf("expected 3 solution, got %d", len(resp.Solutions))
 		}
-		if resp.Solutions[0].CorrectOptionId != 2 {
-			t.Errorf("expected correct option ID 2, got %d", resp.Solutions[0].CorrectOptionId)
-		}
-		if resp.Solutions[0].CorrectOptionText != "Paris" {
-			t.Errorf("expected correct option 'Paris', got '%s'", resp.Solutions[0].CorrectOptionText)
+
+		for _, sol := range resp.Solutions {
+			switch sol.Question.Id {
+			case 1:
+				if sol.CorrectOptionId != 2 {
+					t.Errorf("question 1: expected correct option ID 2, got %d", sol.CorrectOptionId)
+				}
+				if sol.CorrectOptionText != "Paris" {
+					t.Errorf("question 1: expected correct option 'Paris', got '%s'", sol.CorrectOptionText)
+				}
+			case 2:
+				if sol.CorrectOptionText != "Mars" {
+					t.Errorf("question 2: expected correct option 'Mars', got '%s'", sol.CorrectOptionText)
+				}
+			case 3:
+				if sol.CorrectOptionText != "4" {
+					t.Errorf("question 3: expected correct option '4', got '%s'", sol.CorrectOptionText)
+				}
+			default:
+				t.Errorf("unexpected question ID: %d", sol.Question.Id)
+			}
 		}
 	})
 }

@@ -2,6 +2,7 @@ package qstnnr
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/mateopresacastro/qstnnr/api"
 	"google.golang.org/grpc"
@@ -16,15 +17,16 @@ var _ api.QuestionnaireServer = (*server)(nil)
 type server struct {
 	api.QuestionnaireServer
 	service QService
+	logger  *slog.Logger
 }
 
-func NewServer(data InitialData) (*grpc.Server, error) {
-	store, err := NewMemoryStore(data)
-	if err != nil {
-		return nil, err
-	}
-	service := NewQstnnrService(store)
-	server := &server{service: service}
+type ServerConfig struct {
+	Logger  *slog.Logger
+	Service QService
+}
+
+func NewServer(cfg *ServerConfig) (*grpc.Server, error) {
+	server := &server{service: cfg.Service, logger: cfg.Logger}
 	grpcsrv := grpc.NewServer()
 	api.RegisterQuestionnaireServer(grpcsrv, server)
 	return grpcsrv, nil
@@ -34,7 +36,7 @@ func (s *server) GetQuestions(ctx context.Context, _ *emptypb.Empty) (*api.GetQu
 	qsts, err := s.service.GetQuestions()
 	if err != nil {
 		if _, ok := err.(ServiceError); !ok {
-			// TODO: logging
+			s.reportBug(err)
 			return nil, status.Error(codes.Unknown, "unknown error") // Bug
 		}
 		return nil, status.Error(codes.Internal, "failed to get questions") // Known edge case
@@ -60,6 +62,7 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 	result, err := s.service.SubmitAnswers(answers)
 	if err != nil {
 		if _, ok := err.(ServiceError); !ok {
+			s.reportBug(err)
 			return nil, status.Error(codes.Unknown, "unknown error")
 		}
 		return nil, status.Error(codes.Unknown, "failed to process submission")
@@ -68,6 +71,7 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 	qsts, err := s.service.GetQuestions()
 	if err != nil {
 		if _, ok := err.(ServiceError); !ok {
+			s.reportBug(err)
 			return nil, status.Error(codes.Unknown, "unknown error")
 		}
 		return nil, status.Error(codes.Internal, "failed to get questions")
@@ -87,6 +91,7 @@ func (s *server) GetSolutions(ctx context.Context, req *emptypb.Empty) (*api.Get
 	solutions, err := s.service.GetSolutions()
 	if err != nil {
 		if _, ok := err.(ServiceError); !ok {
+			s.reportBug(err)
 			return nil, status.Error(codes.Unknown, "unknown error")
 		}
 		return nil, status.Error(codes.Internal, "failed to get solutions")
@@ -115,4 +120,8 @@ func (s *server) processSolutions(ss map[QuestionID]OptionID) ([]*api.Solution, 
 		processed = append(processed, s)
 	}
 	return processed, nil
+}
+
+func (s *server) reportBug(err error) {
+	s.logger.Error("there was an unnespected issue; please report this as a bug", "err", err)
 }
