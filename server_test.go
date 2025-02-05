@@ -26,7 +26,51 @@ func TestServer(t *testing.T) {
 	}
 	defer conn.Close()
 
-	server, err := qstnnr.NewServer()
+	questions := map[qstnnr.QuestionID]qstnnr.Question{
+		1: {
+			ID:   1,
+			Text: "What is the capital of France?",
+			Options: map[qstnnr.OptionID]qstnnr.Option{
+				1: {ID: 1, Text: "London"},
+				2: {ID: 2, Text: "Paris"},
+				3: {ID: 3, Text: "Berlin"},
+				4: {ID: 4, Text: "Madrid"},
+			},
+		},
+		2: {
+			ID:   2,
+			Text: "Which planet is known as the Red Planet?",
+			Options: map[qstnnr.OptionID]qstnnr.Option{
+				1: {ID: 1, Text: "Venus"},
+				2: {ID: 2, Text: "Mars"},
+				3: {ID: 3, Text: "Jupiter"},
+				4: {ID: 4, Text: "Saturn"},
+			},
+		},
+		3: {
+			ID:   3,
+			Text: "What is 2 + 2?",
+			Options: map[qstnnr.OptionID]qstnnr.Option{
+				1: {ID: 1, Text: "3"},
+				2: {ID: 2, Text: "4"},
+				3: {ID: 3, Text: "5"},
+				4: {ID: 4, Text: "6"},
+			},
+		},
+	}
+
+	solutions := map[qstnnr.QuestionID]qstnnr.OptionID{
+		1: 2, // Paris
+		2: 2, // Mars
+		3: 2, // 4
+	}
+
+	data := qstnnr.InitialData{
+		Questions: questions,
+		Solutions: solutions,
+	}
+
+	server, err := qstnnr.NewServer(data)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,14 +90,33 @@ func TestServer(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(resp.Questions) != 1 {
-			t.Errorf("expected 1 question, got %d", len(resp.Questions))
+		if len(resp.Questions) != 3 {
+			t.Errorf("expected 3 question, got %d", len(resp.Questions))
 		}
 		if resp.Questions[0].Id != 1 {
 			t.Errorf("expected question ID 1, got %d", resp.Questions[0].Id)
 		}
-		if resp.Questions[0].Text != "What is 2+2?" {
-			t.Errorf("expected question 'What is 2+2?', got '%s'", resp.Questions[0].Text)
+		if resp.Questions[0].Text != "What is the capital of France?" {
+			t.Errorf("expected question 'What is the capital of France?', got '%s'", resp.Questions[0].Text)
+		}
+	})
+
+	t.Run("Should error if we don't send the correct number of answers", func(t *testing.T) {
+		_, err := client.SubmitAnswers(ctx, &api.SubmitAnswersRequest{
+			Answers: []*api.Answer{
+				{
+					QustionId: 1,
+					OptionId:  2,
+				},
+				{
+					QustionId: 2,
+					OptionId:  1,
+				},
+			},
+		})
+
+		if err == nil {
+			t.Fatal("expected error since we are sending 2 answers only")
 		}
 	})
 
@@ -64,16 +127,25 @@ func TestServer(t *testing.T) {
 					QustionId: 1,
 					OptionId:  2,
 				},
+				{
+					QustionId: 2,
+					OptionId:  1,
+				},
+				{
+					QustionId: 3,
+					OptionId:  1,
+				},
 			},
 		})
+
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(resp.Solutions) != 1 {
-			t.Errorf("expected 1 solution, got %d", len(resp.Solutions))
+		if len(resp.Solutions) != 3 {
+			t.Errorf("expected 3 solution, got %d", len(resp.Solutions))
 		}
-		if resp.Stats != 1 {
-			t.Errorf("expected stats 1, got %d", resp.Stats)
+		if resp.Stats != 100 {
+			t.Errorf("expected stats 100, got %d", resp.Stats)
 		}
 		if resp.Solutions[0].CorrectOptionId != 2 {
 			t.Errorf("expected correct option ID 2, got %d", resp.Solutions[0].CorrectOptionId)
@@ -85,14 +157,14 @@ func TestServer(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(resp.Solutions) != 1 {
-			t.Errorf("expected 1 solution, got %d", len(resp.Solutions))
+		if len(resp.Solutions) != 3 {
+			t.Errorf("expected 3 solution, got %d", len(resp.Solutions))
 		}
 		if resp.Solutions[0].CorrectOptionId != 2 {
 			t.Errorf("expected correct option ID 2, got %d", resp.Solutions[0].CorrectOptionId)
 		}
-		if resp.Solutions[0].CorrectOptionText != "4" {
-			t.Errorf("expected correct option '4', got '%s'", resp.Solutions[0].CorrectOptionText)
+		if resp.Solutions[0].CorrectOptionText != "Paris" {
+			t.Errorf("expected correct option 'Paris', got '%s'", resp.Solutions[0].CorrectOptionText)
 		}
 	})
 }

@@ -9,6 +9,7 @@ import (
 type QService interface {
 	GetQuestions() (map[QuestionID]Question, error)
 	SubmitAnswers(answers map[QuestionID]OptionID) (*SubmitResult, error)
+	GetSolutions() (map[QuestionID]OptionID, error)
 }
 
 type QstnnrService struct {
@@ -36,6 +37,10 @@ func (qs *QstnnrService) SubmitAnswers(answers map[QuestionID]OptionID) (*Submit
 	qsts, err := qs.store.GetQuestions()
 	if err != nil {
 		return nil, fmt.Errorf("getting questions: %w", err)
+	}
+
+	if len(answers) != len(qsts) {
+		return nil, errors.New("number of answers must match number of questions")
 	}
 
 	for qID := range answers {
@@ -87,4 +92,8 @@ func (qs *QstnnrService) stats(score Score) (Stat, error) {
 
 	percentage := float64(betterThan) / float64(len(scores)) * 100
 	return Stat(math.Round(percentage)), nil
+}
+
+func (qs *QstnnrService) GetSolutions() (map[QuestionID]OptionID, error) {
+	return qs.store.GetSolutions()
 }
