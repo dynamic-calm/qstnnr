@@ -9,6 +9,7 @@ import (
 	"github.com/mateopresacastro/qstnnr/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestServer(t *testing.T) {
@@ -41,7 +42,7 @@ func TestServer(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Should get the questions", func(t *testing.T) {
-		resp, err := client.GetQuestions(ctx, &api.GetQuestionsRequest{})
+		resp, err := client.GetQuestions(ctx, &emptypb.Empty{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -80,7 +81,7 @@ func TestServer(t *testing.T) {
 	})
 
 	t.Run("Should get solutions", func(t *testing.T) {
-		resp, err := client.GetSolutions(ctx, &api.GetSolutionsRequest{})
+		resp, err := client.GetSolutions(ctx, &emptypb.Empty{})
 		if err != nil {
 			t.Fatal(err)
 		}

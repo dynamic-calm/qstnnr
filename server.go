@@ -5,6 +5,7 @@ import (
 
 	"github.com/mateopresacastro/qstnnr/api"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // To assert implementation
@@ -21,7 +22,7 @@ func NewServer() (*grpc.Server, error) {
 	return grpcsrv, nil
 }
 
-func (s *server) GetQuestions(ctx context.Context, req *api.GetQuestionsRequest) (*api.GetQuestionsResponse, error) {
+func (s *server) GetQuestions(ctx context.Context, req *emptypb.Empty) (*api.GetQuestionsResponse, error) {
 	mockQuestion := &api.Question{
 		Id:       1,
 		Question: "What is 2+2?",
@@ -42,7 +43,7 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 	return &api.SubmitAnswersResponse{Solutions: []*api.Solution{mockSolution}, Stats: 1}, nil
 }
 
-func (s *server) GetSolutions(ctx context.Context, req *api.GetSolutionsRequest) (*api.GetSolutionsResponse, error) {
+func (s *server) GetSolutions(ctx context.Context, req *emptypb.Empty) (*api.GetSolutionsResponse, error) {
 	mockSolution := &api.Solution{
 		Question:        &api.Question{Id: 1, Question: "What is 2+2?"},
 		CorrectOptionId: 2,
