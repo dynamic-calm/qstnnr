@@ -22,13 +22,13 @@ message GetQuestionsResponse {
 
 message Question {
     int32 id = 1;
-    string question = 2;
+    string text = 2;
     repeated Option options = 3;
 }
 
 message Option {
     int32 id = 1;
-    string option = 2;
+    string text = 2;
 }
 
 message SubmitAnswersRequest {
@@ -48,7 +48,7 @@ message SubmitAnswersResponse {
 message Solution {
     Question question = 1;
     int32 correct_option_id = 2;
-    string correct_option = 3;
+    string correct_option_text = 3;
 }
 
 message GetSolutionsResponse {

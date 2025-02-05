@@ -52,8 +52,8 @@ func TestServer(t *testing.T) {
 		if resp.Questions[0].Id != 1 {
 			t.Errorf("expected question ID 1, got %d", resp.Questions[0].Id)
 		}
-		if resp.Questions[0].Question != "What is 2+2?" {
-			t.Errorf("expected question 'What is 2+2?', got '%s'", resp.Questions[0].Question)
+		if resp.Questions[0].Text != "What is 2+2?" {
+			t.Errorf("expected question 'What is 2+2?', got '%s'", resp.Questions[0].Text)
 		}
 	})
 
@@ -91,8 +91,8 @@ func TestServer(t *testing.T) {
 		if resp.Solutions[0].CorrectOptionId != 2 {
 			t.Errorf("expected correct option ID 2, got %d", resp.Solutions[0].CorrectOptionId)
 		}
-		if resp.Solutions[0].CorrectOption != "4" {
-			t.Errorf("expected correct option '4', got '%s'", resp.Solutions[0].CorrectOption)
+		if resp.Solutions[0].CorrectOptionText != "4" {
+			t.Errorf("expected correct option '4', got '%s'", resp.Solutions[0].CorrectOptionText)
 		}
 	})
 }

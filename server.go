@@ -24,11 +24,11 @@ func NewServer() (*grpc.Server, error) {
 
 func (s *server) GetQuestions(ctx context.Context, req *emptypb.Empty) (*api.GetQuestionsResponse, error) {
 	mockQuestion := &api.Question{
-		Id:       1,
-		Question: "What is 2+2?",
+		Id:   1,
+		Text: "What is 2+2?",
 		Options: []*api.Option{
-			{Id: 1, Option: "3"},
-			{Id: 2, Option: "4"},
+			{Id: 1, Text: "3"},
+			{Id: 2, Text: "4"},
 		},
 	}
 	return &api.GetQuestionsResponse{Questions: []*api.Question{mockQuestion}}, nil
@@ -36,18 +36,18 @@ func (s *server) GetQuestions(ctx context.Context, req *emptypb.Empty) (*api.Get
 
 func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersRequest) (*api.SubmitAnswersResponse, error) {
 	mockSolution := &api.Solution{
-		Question:        &api.Question{Id: 1, Question: "What is 2+2?"},
-		CorrectOptionId: 2,
-		CorrectOption:   "4",
+		Question:          &api.Question{Id: 1, Text: "What is 2+2?"},
+		CorrectOptionId:   2,
+		CorrectOptionText: "4",
 	}
 	return &api.SubmitAnswersResponse{Solutions: []*api.Solution{mockSolution}, Stats: 1}, nil
 }
 
 func (s *server) GetSolutions(ctx context.Context, req *emptypb.Empty) (*api.GetSolutionsResponse, error) {
 	mockSolution := &api.Solution{
-		Question:        &api.Question{Id: 1, Question: "What is 2+2?"},
-		CorrectOptionId: 2,
-		CorrectOption:   "4",
+		Question:          &api.Question{Id: 1, Text: "What is 2+2?"},
+		CorrectOptionId:   2,
+		CorrectOptionText: "4",
 	}
 	return &api.GetSolutionsResponse{Solutions: []*api.Solution{mockSolution}}, nil
 }
