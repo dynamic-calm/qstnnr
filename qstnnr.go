@@ -20,38 +20,55 @@ type SubmitResult struct {
 	Solutions map[QuestionID]OptionID
 	Stat      Stat
 }
+type ServiceError struct {
+	error
+}
 
 func NewQstnnrService(store Store) QService {
 	return &QstnnrService{store: store}
 }
 
 func (qs *QstnnrService) GetQuestions() (map[QuestionID]Question, error) {
-	return qs.store.GetQuestions()
+	questions, err := qs.store.GetQuestions()
+	if err != nil {
+		if _, ok := err.(StoreError); !ok {
+			// If this error is not a StoreError we know it's a bug and not a known edge case.
+			return nil, err
+		}
+		return nil, ServiceError{err}
+	}
+	return questions, nil
 }
 
 func (qs *QstnnrService) SubmitAnswers(answers map[QuestionID]OptionID) (*SubmitResult, error) {
 	if len(answers) == 0 {
-		return nil, errors.New("no answers provided")
+		return nil, ServiceError{errors.New("no answers provided")}
 	}
 
 	qsts, err := qs.store.GetQuestions()
 	if err != nil {
-		return nil, fmt.Errorf("getting questions: %w", err)
+		if _, ok := err.(StoreError); !ok {
+			return nil, err
+		}
+		return nil, ServiceError{err}
 	}
 
 	if len(answers) != len(qsts) {
-		return nil, errors.New("number of answers must match number of questions")
+		return nil, ServiceError{errors.New("number of answers must match number of questions")}
 	}
 
 	for qID := range answers {
 		if _, ok := qsts[qID]; !ok {
-			return nil, fmt.Errorf("couldn't find question with id: %d", qID)
+			return nil, ServiceError{fmt.Errorf("couldn't find question with id: %d", qID)}
 		}
 	}
 
 	solutions, err := qs.store.GetSolutions()
 	if err != nil {
-		return nil, fmt.Errorf("getting questions: %w", err)
+		if _, ok := err.(StoreError); !ok {
+			return nil, err
+		}
+		return nil, StoreError{err}
 	}
 
 	correct := 0
@@ -63,11 +80,17 @@ func (qs *QstnnrService) SubmitAnswers(answers map[QuestionID]OptionID) (*Submit
 
 	stat, err := qs.stats(correct)
 	if err != nil {
-		return nil, fmt.Errorf("calculating stats: %w", err)
+		if _, ok := err.(StoreError); !ok {
+			return nil, err
+		}
+		return nil, ServiceError{fmt.Errorf("calculating stats: %w", err)}
 	}
 
 	if err := qs.store.SaveScore(correct); err != nil {
-		return nil, fmt.Errorf("saving score: %w", err)
+		if _, ok := err.(StoreError); !ok {
+			return nil, err
+		}
+		return nil, ServiceError{err}
 	}
 
 	return &SubmitResult{Solutions: solutions, Stat: stat}, nil
@@ -95,5 +118,12 @@ func (qs *QstnnrService) stats(score Score) (Stat, error) {
 }
 
 func (qs *QstnnrService) GetSolutions() (map[QuestionID]OptionID, error) {
-	return qs.store.GetSolutions()
+	solutions, err := qs.store.GetSolutions()
+	if err != nil {
+		if _, ok := err.(StoreError); !ok {
+			return nil, err
+		}
+		return nil, ServiceError{err}
+	}
+	return solutions, nil
 }

@@ -40,6 +40,7 @@ func TestService(t *testing.T) {
 			},
 		},
 	}
+
 	solutions := map[qstnnr.QuestionID]qstnnr.OptionID{
 		1: 2, // Paris
 		2: 2, // Mars
@@ -164,6 +165,16 @@ func TestService(t *testing.T) {
 		_, err := service.SubmitAnswers(answers)
 		if err == nil {
 			t.Fatal(err)
+		}
+	})
+
+	t.Run("should get the correct error type", func(t *testing.T) {
+		answers := map[qstnnr.QuestionID]qstnnr.OptionID{
+			999: 1, // Invalid question ID
+		}
+		_, err := service.SubmitAnswers(answers)
+		if _, ok := err.(qstnnr.ServiceError); !ok {
+			t.Fatalf("error not correcet type")
 		}
 	})
 }

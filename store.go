@@ -56,9 +56,13 @@ type InitialData struct {
 	Solutions map[QuestionID]OptionID
 }
 
+type StoreError struct {
+	error
+}
+
 func NewMemoryStore(data InitialData) (Store, error) {
 	if data.Questions == nil || data.Solutions == nil {
-		return nil, errors.New("questions and solutions maps cannot be nil")
+		return nil, StoreError{errors.New("questions and solutions maps cannot be nil")}
 	}
 	return &memoryStore{
 		questions: data.Questions,
@@ -82,7 +86,7 @@ func (s *memoryStore) GetSolutions() (map[QuestionID]OptionID, error) {
 
 func (s *memoryStore) SaveScore(score Score) error {
 	if score < 0 {
-		return fmt.Errorf("score cannot be negative: %d", score)
+		return StoreError{fmt.Errorf("score cannot be negative: %d", score)}
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()

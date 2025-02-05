@@ -33,7 +33,11 @@ func NewServer(data InitialData) (*grpc.Server, error) {
 func (s *server) GetQuestions(ctx context.Context, _ *emptypb.Empty) (*api.GetQuestionsResponse, error) {
 	qsts, err := s.service.GetQuestions()
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get questions")
+		if _, ok := err.(ServiceError); !ok {
+			// TODO: logging
+			return nil, status.Error(codes.Unknown, "unknown error") // Bug
+		}
+		return nil, status.Error(codes.Internal, "failed to get questions") // Known edge case
 	}
 	var questions []*api.Question
 	for qID, q := range qsts {
@@ -55,11 +59,17 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 	}
 	result, err := s.service.SubmitAnswers(answers)
 	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to process submission") // TODO: error boundaries
+		if _, ok := err.(ServiceError); !ok {
+			return nil, status.Error(codes.Unknown, "unknown error")
+		}
+		return nil, status.Error(codes.Unknown, "failed to process submission")
 	}
 
 	qsts, err := s.service.GetQuestions()
 	if err != nil {
+		if _, ok := err.(ServiceError); !ok {
+			return nil, status.Error(codes.Unknown, "unknown error")
+		}
 		return nil, status.Error(codes.Internal, "failed to get questions")
 	}
 
@@ -76,9 +86,17 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 func (s *server) GetSolutions(ctx context.Context, req *emptypb.Empty) (*api.GetSolutionsResponse, error) {
 	solutions, err := s.service.GetSolutions()
 	if err != nil {
+		if _, ok := err.(ServiceError); !ok {
+			return nil, status.Error(codes.Unknown, "unknown error")
+		}
 		return nil, status.Error(codes.Internal, "failed to get solutions")
 	}
+
 	processed, err := s.processSolutions(solutions)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to process response")
+	}
+
 	return &api.GetSolutionsResponse{Solutions: processed}, nil
 }
 

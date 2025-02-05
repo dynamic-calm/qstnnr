@@ -119,6 +119,13 @@ func TestStore(t *testing.T) {
 		}
 	})
 
+	t.Run("error should be of correct type", func(t *testing.T) {
+		err := store.SaveScore(-1)
+		if _, ok := err.(qstnnr.StoreError); !ok {
+			t.Fatal("error is not of correct type")
+		}
+	})
+
 	t.Run("should return copy of scores", func(t *testing.T) {
 		scores1, err := store.GetAllScores()
 		if err != nil {
