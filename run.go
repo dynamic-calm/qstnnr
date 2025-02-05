@@ -3,7 +3,7 @@ package qstnnr
 import (
 	"context"
 	"fmt"
-	"log"
+	"io"
 	"log/slog"
 	"net"
 	"os"
@@ -13,7 +13,11 @@ import (
 	"google.golang.org/grpc"
 )
 
-func Run(ctx context.Context, getenv func(string) string) error {
+func Run(
+	ctx context.Context,
+	getenv func(string) string,
+	output io.Writer,
+) error {
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
 	defer cancel()
 
@@ -68,7 +72,10 @@ func Run(ctx context.Context, getenv func(string) string) error {
 
 	service := NewQstnnrService(store)
 
-	logger := slog.Default()
+	logger := slog.New(slog.NewJSONHandler(output, &slog.HandlerOptions{
+		Level: parseLogLevel(getenv("LOG_LEVEL")),
+	}))
+
 	cfg := &ServerConfig{
 		Logger:  logger,
 		Service: service,
@@ -78,7 +85,7 @@ func Run(ctx context.Context, getenv func(string) string) error {
 	ln, err := net.Listen("tcp", ":"+getenv("PORT"))
 
 	go func() {
-		log.Printf("listening on %s\n", getenv("PORT"))
+		logger.Info("listening", "port", getenv("PORT"))
 		if err := server.Serve(ln); err != nil && err != grpc.ErrServerStopped {
 			fmt.Fprintf(os.Stderr, "error listening and serving: %s\n", err)
 		}
@@ -89,9 +96,25 @@ func Run(ctx context.Context, getenv func(string) string) error {
 	go func() {
 		defer wg.Done()
 		<-ctx.Done()
+		logger.Info("shutting down server")
 		server.GracefulStop()
 	}()
 
 	wg.Wait()
 	return nil
+}
+
+func parseLogLevel(level string) slog.Level {
+	switch level {
+	case "DEBUG":
+		return slog.LevelDebug
+	case "INFO":
+		return slog.LevelInfo
+	case "WARN":
+		return slog.LevelWarn
+	case "ERROR":
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
+	}
 }
