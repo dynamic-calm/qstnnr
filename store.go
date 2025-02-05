@@ -23,6 +23,7 @@ type memoryStore struct {
 type QuestionID int
 type OptionID int
 type Score = int // Number of correct answers.
+type Stat = int  // Percentile calculation
 
 type Question struct {
 	ID      QuestionID

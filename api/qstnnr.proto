@@ -42,18 +42,16 @@ message Answer {
 
 message SubmitAnswersResponse {
     repeated Solution solutions = 1;
-    int64 stats = 2;
+    uint64 better_than = 2;
 }
 
 message Solution {
     Question question = 1;
     int32 correct_option_id = 2;
-    string correct_option_text = 3;
 }
 
 message GetSolutionsResponse {
     repeated Solution solutions = 1;
-    uint64 better_than = 3;
 }
 
 
