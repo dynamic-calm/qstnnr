@@ -163,6 +163,25 @@ func TestServer(t *testing.T) {
 		if resp.Solutions[0].CorrectOptionId != 2 {
 			t.Errorf("expected correct option ID 2, got %d", resp.Solutions[0].CorrectOptionId)
 		}
+
+		for _, sol := range resp.Solutions {
+			switch sol.Question.Id {
+			case 1:
+				if sol.CorrectOptionId != 2 {
+					t.Errorf("question 1: expected correct option ID 2, got %d", sol.CorrectOptionId)
+				}
+			case 2:
+				if sol.CorrectOptionText != "Mars" {
+					t.Errorf("question 2: expected correct option 'Mars', got '%s'", sol.CorrectOptionText)
+				}
+			case 3:
+				if sol.CorrectOptionText != "4" {
+					t.Errorf("question 3: expected correct option '4', got '%s'", sol.CorrectOptionText)
+				}
+			default:
+				t.Errorf("unexpected question ID: %d", sol.Question.Id)
+			}
+		}
 	})
 
 	t.Run("Should get solutions", func(t *testing.T) {

@@ -73,23 +73,11 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 		return nil, status.Error(codes.Unknown, "failed to process submission")
 	}
 
-	qsts, err := s.service.GetQuestions()
+	processed, err := s.processSolutions(result.Solutions)
 	if err != nil {
-		if _, ok := err.(ServiceError); !ok {
-			s.reportBug(err)
-			return nil, status.Error(codes.Unknown, "unknown error")
-		}
-		return nil, status.Error(codes.Internal, "failed to get questions")
+		return nil, status.Error(codes.Internal, "failed to process response")
 	}
-
-	var solutions []*api.Solution
-	for qID, oID := range result.Solutions {
-		q := &api.Question{Id: int32(qID), Text: qsts[qID].Text}
-		s := &api.Solution{Question: q, CorrectOptionId: int32(oID), CorrectOptionText: q.Text}
-		solutions = append(solutions, s)
-	}
-
-	return &api.SubmitAnswersResponse{Solutions: solutions, BetterThan: int64(result.Stat)}, nil
+	return &api.SubmitAnswersResponse{Solutions: processed, BetterThan: int32(result.Stat)}, nil
 }
 
 // GetSolutions returns the correct answers for all questions.
