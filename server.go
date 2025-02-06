@@ -2,6 +2,7 @@ package qstnnr
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"github.com/mateopresacastro/qstnnr/api"
@@ -43,7 +44,7 @@ func (s *server) GetQuestions(ctx context.Context, _ *emptypb.Empty) (*api.GetQu
 			s.reportBug(err)
 			return nil, status.Error(codes.Unknown, "unknown error") // Bug
 		}
-		return nil, status.Error(codes.Internal, "failed to get questions") // Known edge case
+		return nil, status.Error(codes.Internal, err.Error()) // Known edge case
 	}
 	var questions []*api.Question
 	for qID, q := range qsts {
@@ -120,5 +121,6 @@ func (s *server) processSolutions(ss map[QuestionID]OptionID) ([]*api.Solution, 
 // reportBug logs unexpected errors for debugging. Here we could send this bug to a
 // centralized destination.
 func (s *server) reportBug(err error) {
-	s.logger.Error("there was an unnespected issue; please report this as a bug", "err", err)
+	msg := "there was an unnespected issue; please report this as a bug"
+	s.logger.Error(msg, "err", fmt.Sprintf("%#v", err))
 }
