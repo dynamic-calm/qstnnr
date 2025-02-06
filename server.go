@@ -126,7 +126,6 @@ func (s *server) handleError(err error) error {
 			s.reportBug(fmt.Errorf("error mapping domain error code %d to gRPC error code", qErr.Code))
 			return unknownError
 		}
-		s.logger.Error(qErr.Message, "err", fmt.Sprintf("%#v", err))
 		return status.Error(grpcCode, qErr.Message)
 	}
 
