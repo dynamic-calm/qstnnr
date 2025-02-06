@@ -71,7 +71,11 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 	if err != nil {
 		return nil, s.handleError(err)
 	}
-	return &api.SubmitAnswersResponse{Solutions: processed, BetterThan: int32(result.Stat)}, nil
+	return &api.SubmitAnswersResponse{
+		Solutions:  processed,
+		BetterThan: int32(result.Stat),
+		Correct:    int32(result.Correct),
+	}, nil
 }
 
 // GetSolutions returns the correct answers for all questions.

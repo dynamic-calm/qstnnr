@@ -88,6 +88,10 @@ func TestService(t *testing.T) {
 		if len(result.Solutions) != len(solutions) {
 			t.Fatal("mismatch on length of solutions")
 		}
+
+		if result.Correct != 2 {
+			t.Errorf("expected to get 2 correct answers got %d", result.Correct)
+		}
 	})
 
 	t.Run("should calculate stats correctly", func(t *testing.T) {

@@ -38,6 +38,7 @@ func init() {
 }
 
 func (c *CLI) connect() error {
+	// TODO port
 	conn, err := grpc.NewClient("localhost:5974", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err

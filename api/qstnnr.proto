@@ -42,7 +42,8 @@ message Answer {
 
 message SubmitAnswersResponse {
     repeated Solution solutions = 1;
-    int32 better_than = 2;
+    int32 correct = 2;
+    int32 better_than = 3;
 }
 
 message Solution {
