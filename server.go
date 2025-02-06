@@ -2,6 +2,7 @@ package qstnnr
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"github.com/mateopresacastro/qstnnr/api"
@@ -39,12 +40,9 @@ func NewServer(cfg *ServerConfig) (*grpc.Server, error) {
 func (s *server) GetQuestions(ctx context.Context, _ *emptypb.Empty) (*api.GetQuestionsResponse, error) {
 	qsts, err := s.service.GetQuestions()
 	if err != nil {
-		if _, ok := err.(ServiceError); !ok {
-			s.reportBug(err)
-			return nil, status.Error(codes.Unknown, "unknown error") // Bug
-		}
-		return nil, status.Error(codes.Internal, "failed to get questions") // Known edge case
+		return nil, s.handleError(err)
 	}
+
 	var questions []*api.Question
 	for qID, q := range qsts {
 		var options []*api.Option
@@ -66,16 +64,12 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 	}
 	result, err := s.service.SubmitAnswers(answers)
 	if err != nil {
-		if _, ok := err.(ServiceError); !ok {
-			s.reportBug(err)
-			return nil, status.Error(codes.Unknown, "unknown error")
-		}
-		return nil, status.Error(codes.Unknown, "failed to process submission")
+		return nil, s.handleError(err)
 	}
 
 	processed, err := s.processSolutions(result.Solutions)
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to process response")
+		return nil, s.handleError(err)
 	}
 	return &api.SubmitAnswersResponse{Solutions: processed, BetterThan: int32(result.Stat)}, nil
 }
@@ -84,16 +78,12 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 func (s *server) GetSolutions(ctx context.Context, req *emptypb.Empty) (*api.GetSolutionsResponse, error) {
 	solutions, err := s.service.GetSolutions()
 	if err != nil {
-		if _, ok := err.(ServiceError); !ok {
-			s.reportBug(err)
-			return nil, status.Error(codes.Unknown, "unknown error")
-		}
-		return nil, status.Error(codes.Internal, "failed to get solutions")
+		return nil, s.handleError(err)
 	}
 
 	processed, err := s.processSolutions(solutions)
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to process response")
+		return nil, s.handleError(err)
 	}
 
 	return &api.GetSolutionsResponse{Solutions: processed}, nil
@@ -117,8 +107,43 @@ func (s *server) processSolutions(ss map[QuestionID]OptionID) ([]*api.Solution, 
 	return processed, nil
 }
 
+// handleError centralizes the error handling. It maps domain level error codes
+// to gRPC codes and reports bugs.
+func (s *server) handleError(err error) error {
+	unknownError := status.Error(codes.Unknown, "an unexpected error occurred")
+
+	// If this is not a ServiceError we know is not a known edge case and is a real bug.
+	serviceErr, ok := err.(ServiceError)
+	if !ok {
+		s.reportBug(err)
+		return unknownError
+	}
+
+	// Get the inner error from ServiceError and check if it's a QError
+	if qErr, ok := serviceErr.error.(QError); ok {
+		grpcCode, ok := errorCodeToGRPC[qErr.Code]
+		if !ok {
+			s.reportBug(fmt.Errorf("error mapping domain error code %d to gRPC error code", qErr.Code))
+			return unknownError
+		}
+		s.logger.Error(qErr.Message, "err", fmt.Sprintf("%#v", err))
+		return status.Error(grpcCode, qErr.Message)
+	}
+
+	return status.Error(codes.Internal, serviceErr.Error())
+}
+
 // reportBug logs unexpected errors for debugging. Here we could send this bug to a
 // centralized destination.
 func (s *server) reportBug(err error) {
-	s.logger.Error("there was an unnespected issue; please report this as a bug", "err", err)
+	msg := "there was an unnespected issue; please report this as a bug"
+	s.logger.Error(msg, "err", fmt.Sprintf("%#v", err))
+}
+
+// errorCodeToGRPC maps domain level errors to gRPC errors.
+var errorCodeToGRPC = map[ErrorCode]codes.Code{
+	ErrorCodeUnknown:      codes.Unknown,
+	ErrorCodeInvalidInput: codes.InvalidArgument,
+	ErrorCodeNotFound:     codes.NotFound,
+	ErrorCodeInternal:     codes.Internal,
 }
