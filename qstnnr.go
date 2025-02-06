@@ -1,8 +1,6 @@
 package qstnnr
 
 import (
-	"errors"
-	"fmt"
 	"math"
 )
 
@@ -51,7 +49,7 @@ func (qs *QstnnrService) GetQuestions() (map[QuestionID]Question, error) {
 // SubmitAnswers processes a questionnaire submission and returns results.
 func (qs *QstnnrService) SubmitAnswers(answers map[QuestionID]OptionID) (*SubmitResult, error) {
 	if len(answers) == 0 {
-		return nil, ServiceError{errors.New("no answers provided")}
+		return nil, ServiceError{wrapError(nil, ErrorCodeInvalidInput, "no answers provided")}
 	}
 
 	qsts, err := qs.store.GetQuestions()
@@ -59,16 +57,17 @@ func (qs *QstnnrService) SubmitAnswers(answers map[QuestionID]OptionID) (*Submit
 		if _, ok := err.(StoreError); !ok {
 			return nil, err
 		}
-		return nil, ServiceError{err}
+		return nil, ServiceError{wrapError(err, ErrorCodeInternal, "failed to get questions")}
 	}
 
 	if len(answers) != len(qsts) {
-		return nil, ServiceError{errors.New("number of answers must match number of questions")}
+		msg := "number of answers (%d) must match number of questions (%d)"
+		return nil, ServiceError{wrapError(nil, ErrorCodeInvalidInput, msg, len(answers), len(qsts))}
 	}
 
 	for qID := range answers {
 		if _, ok := qsts[qID]; !ok {
-			return nil, ServiceError{fmt.Errorf("couldn't find question with id: %d", qID)}
+			return nil, ServiceError{wrapError(nil, ErrorCodeInvalidInput, "couldn't find question with id: %d", qID)}
 		}
 	}
 
@@ -77,7 +76,7 @@ func (qs *QstnnrService) SubmitAnswers(answers map[QuestionID]OptionID) (*Submit
 		if _, ok := err.(StoreError); !ok {
 			return nil, err
 		}
-		return nil, StoreError{err}
+		return nil, StoreError{wrapError(err, ErrorCodeInternal, "failed to get solutions")}
 	}
 
 	correct := 0
@@ -92,14 +91,14 @@ func (qs *QstnnrService) SubmitAnswers(answers map[QuestionID]OptionID) (*Submit
 		if _, ok := err.(StoreError); !ok {
 			return nil, err
 		}
-		return nil, ServiceError{fmt.Errorf("calculating stats: %w", err)}
+		return nil, ServiceError{wrapError(err, ErrorCodeInternal, "calculating stats")}
 	}
 
 	if err := qs.store.SaveScore(correct); err != nil {
 		if _, ok := err.(StoreError); !ok {
 			return nil, err
 		}
-		return nil, ServiceError{err}
+		return nil, ServiceError{wrapError(err, ErrorCodeInternal, "failed to save score: %d", correct)}
 	}
 
 	return &SubmitResult{Solutions: solutions, Stat: stat}, nil
@@ -134,7 +133,7 @@ func (qs *QstnnrService) GetSolutions() (map[QuestionID]OptionID, error) {
 		if _, ok := err.(StoreError); !ok {
 			return nil, err
 		}
-		return nil, ServiceError{err}
+		return nil, ServiceError{wrapError(err, ErrorCodeInternal, "failed to get solutions")}
 	}
 	return solutions, nil
 }

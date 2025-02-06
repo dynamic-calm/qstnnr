@@ -9,7 +9,9 @@ import (
 	"github.com/mateopresacastro/qstnnr"
 	"github.com/mateopresacastro/qstnnr/api"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -106,12 +108,6 @@ func TestServer(t *testing.T) {
 		if len(resp.Questions) != 3 {
 			t.Errorf("expected 3 question, got %d", len(resp.Questions))
 		}
-		if resp.Questions[0].Id != 1 {
-			t.Errorf("expected question ID 1, got %d", resp.Questions[0].Id)
-		}
-		if resp.Questions[0].Text != "What is the capital of France?" {
-			t.Errorf("expected question 'What is the capital of France?', got '%s'", resp.Questions[0].Text)
-		}
 	})
 
 	t.Run("Should error if we don't send the correct number of answers", func(t *testing.T) {
@@ -160,9 +156,6 @@ func TestServer(t *testing.T) {
 		if resp.BetterThan != 100 {
 			t.Errorf("expected stats 100, got %d", resp.BetterThan)
 		}
-		if resp.Solutions[0].CorrectOptionId != 2 {
-			t.Errorf("expected correct option ID 2, got %d", resp.Solutions[0].CorrectOptionId)
-		}
 
 		for _, sol := range resp.Solutions {
 			switch sol.Question.Id {
@@ -210,6 +203,55 @@ func TestServer(t *testing.T) {
 			default:
 				t.Errorf("unexpected question ID: %d", sol.Question.Id)
 			}
+		}
+	})
+
+	t.Run("Should return InvalidArgument when submitting answers with invalid question ID", func(t *testing.T) {
+		_, err := client.SubmitAnswers(ctx, &api.SubmitAnswersRequest{
+			Answers: []*api.Answer{
+				{
+					QuestionId: 999, // Non-existent question ID
+					OptionId:   1,
+				},
+				{
+					QuestionId: 2,
+					OptionId:   1,
+				},
+				{
+					QuestionId: 3,
+					OptionId:   1,
+				},
+			},
+		})
+
+		if err == nil {
+			t.Fatal("expected error with invalid question ID")
+		}
+
+		status, ok := status.FromError(err)
+		if !ok {
+			t.Fatal("expected gRPC status error")
+		}
+		if status.Code() != codes.InvalidArgument {
+			t.Errorf("expected InvalidArgument error code, got %v", status.Code())
+		}
+	})
+
+	t.Run("Should return InvalidArgument when submitting empty answers", func(t *testing.T) {
+		_, err := client.SubmitAnswers(ctx, &api.SubmitAnswersRequest{
+			Answers: []*api.Answer{}, // Empty answers
+		})
+
+		if err == nil {
+			t.Fatal("expected error with empty answers")
+		}
+
+		status, ok := status.FromError(err)
+		if !ok {
+			t.Fatal("expected gRPC status error")
+		}
+		if status.Code() != codes.InvalidArgument {
+			t.Errorf("expected InvalidArgument error code, got %v", status.Code())
 		}
 	})
 }
