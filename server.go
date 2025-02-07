@@ -71,7 +71,11 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 	if err != nil {
 		return nil, s.handleError(err)
 	}
-	return &api.SubmitAnswersResponse{Solutions: processed, BetterThan: int32(result.Stat)}, nil
+	return &api.SubmitAnswersResponse{
+		Solutions:  processed,
+		BetterThan: int32(result.Stat),
+		Correct:    int32(result.Correct),
+	}, nil
 }
 
 // GetSolutions returns the correct answers for all questions.
@@ -126,7 +130,6 @@ func (s *server) handleError(err error) error {
 			s.reportBug(fmt.Errorf("error mapping domain error code %d to gRPC error code", qErr.Code))
 			return unknownError
 		}
-		s.logger.Error(qErr.Message, "err", fmt.Sprintf("%#v", err))
 		return status.Error(grpcCode, qErr.Message)
 	}
 

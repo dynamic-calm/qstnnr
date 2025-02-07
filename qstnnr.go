@@ -21,6 +21,7 @@ type QstnnrService struct {
 type SubmitResult struct {
 	Solutions map[QuestionID]OptionID
 	Stat      Stat
+	Correct   int
 }
 
 // SubmitResult contains quiz submission results and ranking.
@@ -101,7 +102,7 @@ func (qs *QstnnrService) SubmitAnswers(answers map[QuestionID]OptionID) (*Submit
 		return nil, ServiceError{wrapError(err, ErrorCodeInternal, "failed to save score: %d", correct)}
 	}
 
-	return &SubmitResult{Solutions: solutions, Stat: stat}, nil
+	return &SubmitResult{Solutions: solutions, Stat: stat, Correct: correct}, nil
 }
 
 // stats calculates the percentile ranking for a score.
