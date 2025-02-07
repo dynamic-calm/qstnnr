@@ -8,6 +8,7 @@ import (
 
 	"github.com/mateopresacastro/qstnnr"
 	"github.com/mateopresacastro/qstnnr/api"
+	"github.com/mateopresacastro/qstnnr/pkg/store"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -29,11 +30,11 @@ func TestServer(t *testing.T) {
 	}
 	defer conn.Close()
 
-	questions := map[qstnnr.QuestionID]qstnnr.Question{
+	questions := map[store.QuestionID]store.Question{
 		1: {
 			ID:   1,
 			Text: "What is the capital of France?",
-			Options: map[qstnnr.OptionID]qstnnr.Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "London"},
 				2: {ID: 2, Text: "Paris"},
 				3: {ID: 3, Text: "Berlin"},
@@ -43,7 +44,7 @@ func TestServer(t *testing.T) {
 		2: {
 			ID:   2,
 			Text: "Which planet is known as the Red Planet?",
-			Options: map[qstnnr.OptionID]qstnnr.Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "Venus"},
 				2: {ID: 2, Text: "Mars"},
 				3: {ID: 3, Text: "Jupiter"},
@@ -53,7 +54,7 @@ func TestServer(t *testing.T) {
 		3: {
 			ID:   3,
 			Text: "What is 2 + 2?",
-			Options: map[qstnnr.OptionID]qstnnr.Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "3"},
 				2: {ID: 2, Text: "4"},
 				3: {ID: 3, Text: "5"},
@@ -62,23 +63,23 @@ func TestServer(t *testing.T) {
 		},
 	}
 
-	solutions := map[qstnnr.QuestionID]qstnnr.OptionID{
+	solutions := map[store.QuestionID]store.OptionID{
 		1: 2, // Paris
 		2: 2, // Mars
 		3: 2, // 4
 	}
 
-	data := qstnnr.InitialData{
+	data := store.InitialData{
 		Questions: questions,
 		Solutions: solutions,
 	}
 
-	store, err := qstnnr.NewMemoryStore(data)
+	s, err := store.NewMemoryStore(data)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	service := qstnnr.NewQstnnrService(store)
+	service := qstnnr.NewQstnnrService(s)
 
 	cfg := &qstnnr.ServerConfig{
 		Logger:  slog.Default(),

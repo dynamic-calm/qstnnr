@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"sync"
 
+	"github.com/mateopresacastro/qstnnr/pkg/store"
 	"google.golang.org/grpc"
 )
 
@@ -24,7 +25,7 @@ func Run(
 	defer cancel()
 
 	data := getInitialData()
-	store, err := NewMemoryStore(data)
+	store, err := store.NewMemoryStore(data)
 	if err != nil {
 		return err
 	}

@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/manifoldco/promptui"
-	"github.com/mateopresacastro/qstnnr"
 	"github.com/mateopresacastro/qstnnr/api"
+	"github.com/mateopresacastro/qstnnr/pkg/store"
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -27,7 +27,7 @@ func (c *CLI) runTakeQuiz(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	answers := make(map[qstnnr.QuestionID]qstnnr.OptionID)
+	answers := make(map[store.QuestionID]store.OptionID)
 	for i, q := range questions.Questions {
 		fmt.Printf("Question %d of %d\n", i+1, len(questions.Questions))
 		// Create options slice for the select prompt
@@ -53,7 +53,7 @@ func (c *CLI) runTakeQuiz(cmd *cobra.Command, args []string) error {
 		}
 
 		// Store the answer
-		answers[qstnnr.QuestionID(q.Id)] = qstnnr.OptionID(q.Options[index].Id)
+		answers[store.QuestionID(q.Id)] = store.OptionID(q.Options[index].Id)
 	}
 
 	if len(answers) <= 0 {
@@ -108,9 +108,9 @@ func (c *CLI) runTakeQuiz(cmd *cobra.Command, args []string) error {
 
 	for _, solution := range submitRes.Solutions {
 		fmt.Printf("\n%s\n", solution.Question.Text)
-		userAnswer := answers[qstnnr.QuestionID(solution.Question.Id)]
+		userAnswer := answers[store.QuestionID(solution.Question.Id)]
 
-		if userAnswer == qstnnr.OptionID(solution.CorrectOptionId) {
+		if userAnswer == store.OptionID(solution.CorrectOptionId) {
 			// Correct
 			fmt.Printf("\033[32m✓ %s\033[0m\n", solution.CorrectOptionText)
 		} else {

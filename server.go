@@ -6,6 +6,8 @@ import (
 	"log/slog"
 
 	"github.com/mateopresacastro/qstnnr/api"
+	"github.com/mateopresacastro/qstnnr/pkg/qerr"
+	"github.com/mateopresacastro/qstnnr/pkg/store"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -58,9 +60,9 @@ func (s *server) GetQuestions(ctx context.Context, _ *emptypb.Empty) (*api.GetQu
 
 // SubmitAnswers processes submitted answers and returns results with statistics.
 func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersRequest) (*api.SubmitAnswersResponse, error) {
-	answers := make(map[QuestionID]OptionID)
+	answers := make(map[store.QuestionID]store.OptionID)
 	for _, a := range req.Answers {
-		answers[QuestionID(a.QuestionId)] = OptionID(a.OptionId)
+		answers[store.QuestionID(a.QuestionId)] = store.OptionID(a.OptionId)
 	}
 	result, err := s.service.SubmitAnswers(answers)
 	if err != nil {
@@ -94,7 +96,7 @@ func (s *server) GetSolutions(ctx context.Context, req *emptypb.Empty) (*api.Get
 }
 
 // processSolutions converts internal solution format to API response format.
-func (s *server) processSolutions(ss map[QuestionID]OptionID) ([]*api.Solution, error) {
+func (s *server) processSolutions(ss map[store.QuestionID]store.OptionID) ([]*api.Solution, error) {
 	qsts, err := s.service.GetQuestions()
 	if err != nil {
 		return nil, err
@@ -124,7 +126,7 @@ func (s *server) handleError(err error) error {
 	}
 
 	// Get the inner error from ServiceError and check if it's a QError
-	if qErr, ok := serviceErr.error.(QError); ok {
+	if qErr, ok := serviceErr.error.(qerr.QError); ok {
 		grpcCode, ok := errorCodeToGRPC[qErr.Code]
 		if !ok {
 			s.reportBug(fmt.Errorf("error mapping domain error code %d to gRPC error code", qErr.Code))
@@ -144,9 +146,9 @@ func (s *server) reportBug(err error) {
 }
 
 // errorCodeToGRPC maps domain level errors to gRPC errors.
-var errorCodeToGRPC = map[ErrorCode]codes.Code{
-	ErrorCodeUnknown:      codes.Unknown,
-	ErrorCodeInvalidInput: codes.InvalidArgument,
-	ErrorCodeNotFound:     codes.NotFound,
-	ErrorCodeInternal:     codes.Internal,
+var errorCodeToGRPC = map[qerr.ErrorCode]codes.Code{
+	qerr.Unknown:      codes.Unknown,
+	qerr.InvalidInput: codes.InvalidArgument,
+	qerr.NotFound:     codes.NotFound,
+	qerr.Internal:     codes.Internal,
 }

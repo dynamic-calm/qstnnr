@@ -1,4 +1,4 @@
-package qstnnr
+package store
 
 import (
 	"errors"

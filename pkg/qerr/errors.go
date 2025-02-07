@@ -1,4 +1,4 @@
-package qstnnr
+package qerr
 
 import (
 	"fmt"
@@ -8,10 +8,10 @@ import (
 type ErrorCode int
 
 const (
-	ErrorCodeUnknown      ErrorCode = iota
-	ErrorCodeInvalidInput           // For validation errors
-	ErrorCodeNotFound               // For missing resources
-	ErrorCodeInternal               // For system errors
+	Unknown      ErrorCode = iota
+	InvalidInput           // For validation errors
+	NotFound               // For missing resources
+	Internal               // For system errors
 )
 
 type QError struct {
@@ -22,9 +22,9 @@ type QError struct {
 	Misc       map[string]any
 }
 
-// wrapError creates a QError. It adds more information to the error
+// WrapError creates a QError. It adds more information to the error
 // for debugging.
-func wrapError(err error, code ErrorCode, messagef string, msgArgs ...any) QError {
+func Wrap(err error, code ErrorCode, messagef string, msgArgs ...any) QError {
 	return QError{
 		Inner:      err,
 		Message:    fmt.Sprintf(messagef, msgArgs...),
