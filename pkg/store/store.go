@@ -9,10 +9,10 @@ import (
 // Store defines the interface for persistent storage operations
 // of questions, solutions, and scores.
 type Store interface {
-	GetQuestions() (map[QuestionID]Question, error)
-	GetSolutions() (map[QuestionID]OptionID, error)
+	Questions() (map[QuestionID]Question, error)
+	Solutions() (map[QuestionID]OptionID, error)
 	SaveScore(score Score) error
-	GetAllScores() ([]Score, error)
+	AllScores() ([]Score, error)
 }
 
 type memoryStore struct {
@@ -90,14 +90,14 @@ func NewInMemory(data InitialData) (Store, error) {
 }
 
 // GetQuestions returns all available questions from the store.
-func (s *memoryStore) GetQuestions() (map[QuestionID]Question, error) {
+func (s *memoryStore) Questions() (map[QuestionID]Question, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return s.questions, nil
 }
 
 // GetSolutions returns the correct answers for all questions from the store.
-func (s *memoryStore) GetSolutions() (map[QuestionID]OptionID, error) {
+func (s *memoryStore) Solutions() (map[QuestionID]OptionID, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return s.solutions, nil
@@ -115,7 +115,7 @@ func (s *memoryStore) SaveScore(score Score) error {
 }
 
 // GetAllScores returns a copy of all stored scores.
-func (s *memoryStore) GetAllScores() ([]Score, error) {
+func (s *memoryStore) AllScores() ([]Score, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	scoresCopy := make([]Score, len(s.scores))

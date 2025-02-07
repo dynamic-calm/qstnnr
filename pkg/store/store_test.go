@@ -62,7 +62,7 @@ func TestStore(t *testing.T) {
 	}
 
 	t.Run("should get questions", func(t *testing.T) {
-		qs, err := s.GetQuestions()
+		qs, err := s.Questions()
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -75,7 +75,7 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("should get solutions", func(t *testing.T) {
-		sols, err := s.GetSolutions()
+		sols, err := s.Solutions()
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -97,7 +97,7 @@ func TestStore(t *testing.T) {
 		}
 
 		// Get scores
-		savedScores, err := s.GetAllScores()
+		savedScores, err := s.AllScores()
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -127,7 +127,7 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("should return copy of scores", func(t *testing.T) {
-		scores1, err := s.GetAllScores()
+		scores1, err := s.AllScores()
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -136,7 +136,7 @@ func TestStore(t *testing.T) {
 		scores1[0] = 999
 
 		// Get scores again
-		scores2, err := s.GetAllScores()
+		scores2, err := s.AllScores()
 		if err != nil {
 			t.Fatal(err)
 		}

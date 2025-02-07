@@ -44,7 +44,7 @@ func New(store store.Store) QService {
 
 // GetQuestions returns all available questions.
 func (qs *QstnnrService) GetQuestions() (map[store.QuestionID]store.Question, error) {
-	questions, err := qs.store.GetQuestions()
+	questions, err := qs.store.Questions()
 	if err != nil {
 		if _, ok := err.(store.StoreError); !ok {
 			// If this error is not a StoreError we know it's a bug and not a known edge case.
@@ -61,7 +61,7 @@ func (qs *QstnnrService) SubmitAnswers(answers map[store.QuestionID]store.Option
 		return nil, ServiceError{qerr.Wrap(nil, qerr.InvalidInput, "no answers provided")}
 	}
 
-	qsts, err := qs.store.GetQuestions()
+	qsts, err := qs.store.Questions()
 	if err != nil {
 		if _, ok := err.(store.StoreError); !ok {
 			return nil, err
@@ -80,7 +80,7 @@ func (qs *QstnnrService) SubmitAnswers(answers map[store.QuestionID]store.Option
 		}
 	}
 
-	solutions, err := qs.store.GetSolutions()
+	solutions, err := qs.store.Solutions()
 	if err != nil {
 		if _, ok := err.(store.StoreError); !ok {
 			return nil, err
@@ -115,7 +115,7 @@ func (qs *QstnnrService) SubmitAnswers(answers map[store.QuestionID]store.Option
 
 // stats calculates the percentile ranking for a score.
 func (qs *QstnnrService) stats(score store.Score) (store.Stat, error) {
-	scores, err := qs.store.GetAllScores()
+	scores, err := qs.store.AllScores()
 	if err != nil {
 		return 0, err
 	}
@@ -137,7 +137,7 @@ func (qs *QstnnrService) stats(score store.Score) (store.Stat, error) {
 
 // GetSolutions returns the correct answers for all questions.
 func (qs *QstnnrService) GetSolutions() (map[store.QuestionID]store.OptionID, error) {
-	solutions, err := qs.store.GetSolutions()
+	solutions, err := qs.store.Solutions()
 	if err != nil {
 		if _, ok := err.(store.StoreError); !ok {
 			return nil, err
