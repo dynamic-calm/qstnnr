@@ -10,6 +10,9 @@ import (
 	"os/signal"
 	"sync"
 
+	"github.com/mateopresacastro/qstnnr/pkg/qservice"
+	"github.com/mateopresacastro/qstnnr/pkg/server"
+	"github.com/mateopresacastro/qstnnr/pkg/store"
 	"google.golang.org/grpc"
 )
 
@@ -24,22 +27,22 @@ func Run(
 	defer cancel()
 
 	data := getInitialData()
-	store, err := NewMemoryStore(data)
+	store, err := store.NewInMemory(data)
 	if err != nil {
 		return err
 	}
 
-	service := NewQstnnrService(store)
+	service := qservice.New(store)
 	logger := slog.New(slog.NewJSONHandler(output, &slog.HandlerOptions{
 		Level: parseLogLevel(getenv("LOG_LEVEL")),
 	}))
 
-	cfg := &ServerConfig{
+	cfg := &server.Config{
 		Logger:  logger,
 		Service: service,
 	}
 
-	server, err := NewServer(cfg)
+	server, err := server.New(cfg)
 	port := getenv("PORT")
 	if port == "" {
 		port = DefaultPort

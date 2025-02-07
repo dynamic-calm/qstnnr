@@ -1,11 +1,13 @@
 package qstnnr
 
-func getInitialData() InitialData {
-	questions := map[QuestionID]Question{
+import "github.com/mateopresacastro/qstnnr/pkg/store"
+
+func getInitialData() store.InitialData {
+	questions := map[store.QuestionID]store.Question{
 		1: {
 			ID:   1,
 			Text: "What function is used for deferred execution in Go?",
-			Options: map[OptionID]Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "wait()"},
 				2: {ID: 2, Text: "defer()"},
 				3: {ID: 3, Text: "delayed()"},
@@ -15,7 +17,7 @@ func getInitialData() InitialData {
 		2: {
 			ID:   2,
 			Text: "Which of these is the correct way to declare a slice in Go?",
-			Options: map[OptionID]Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "var s array[]int"},
 				2: {ID: 2, Text: "var s []int"},
 				3: {ID: 3, Text: "s := array{int}"},
@@ -25,7 +27,7 @@ func getInitialData() InitialData {
 		3: {
 			ID:   3,
 			Text: "What is the zero value for a pointer in Go?",
-			Options: map[OptionID]Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "nil"},
 				2: {ID: 2, Text: "0"},
 				3: {ID: 3, Text: "undefined"},
@@ -35,7 +37,7 @@ func getInitialData() InitialData {
 		4: {
 			ID:   4,
 			Text: "Which keyword is used to create a new goroutine?",
-			Options: map[OptionID]Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "go"},
 				2: {ID: 2, Text: "goroutine"},
 				3: {ID: 3, Text: "routine"},
@@ -45,7 +47,7 @@ func getInitialData() InitialData {
 		5: {
 			ID:   5,
 			Text: "What happens if you try to send to a closed channel in Go?",
-			Options: map[OptionID]Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "The program will panic"},
 				2: {ID: 2, Text: "The send will block"},
 				3: {ID: 3, Text: "The value is discarded silently"},
@@ -55,7 +57,7 @@ func getInitialData() InitialData {
 		6: {
 			ID:   6,
 			Text: "Which of these correctly declares a variable that can hold any type in Go?",
-			Options: map[OptionID]Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "var x interface{}"},
 				2: {ID: 2, Text: "var x any"},
 				3: {ID: 3, Text: "Both both interface{} and any are correct"},
@@ -65,7 +67,7 @@ func getInitialData() InitialData {
 		7: {
 			ID:   7,
 			Text: "What is the purpose of the blank identifier (_) in Go?",
-			Options: map[OptionID]Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "To discard an unwanted value"},
 				2: {ID: 2, Text: "To declare a private variable"},
 				3: {ID: 3, Text: "To create an anonymous function"},
@@ -75,7 +77,7 @@ func getInitialData() InitialData {
 		8: {
 			ID:   8,
 			Text: "How do you make a field in a struct unexported in Go?",
-			Options: map[OptionID]Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "Start the field name with a lowercase letter"},
 				2: {ID: 2, Text: "Use the private keyword"},
 				3: {ID: 3, Text: "Add an underscore prefix"},
@@ -85,7 +87,7 @@ func getInitialData() InitialData {
 		9: {
 			ID:   9,
 			Text: "What is the correct way to check if a key exists in a map?",
-			Options: map[OptionID]Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "value, exists := map[key]"},
 				2: {ID: 2, Text: "exists := key in map"},
 				3: {ID: 3, Text: "exists := map.contains(key)"},
@@ -95,7 +97,7 @@ func getInitialData() InitialData {
 		10: {
 			ID:   10,
 			Text: "Which of these correctly implements an empty interface?",
-			Options: map[OptionID]Option{
+			Options: map[store.OptionID]store.Option{
 				1: {ID: 1, Text: "type I interface {}"},
 				2: {ID: 2, Text: "type I interface { void }"},
 				3: {ID: 3, Text: "type I = interface"},
@@ -104,7 +106,7 @@ func getInitialData() InitialData {
 		},
 	}
 
-	solutions := map[QuestionID]OptionID{
+	solutions := map[store.QuestionID]store.OptionID{
 		1:  2, // defer()
 		2:  2, // var s []int
 		3:  1, // nil
@@ -117,7 +119,7 @@ func getInitialData() InitialData {
 		10: 1, // type I interface {}
 	}
 
-	return InitialData{
+	return store.InitialData{
 		Questions: questions,
 		Solutions: solutions,
 	}

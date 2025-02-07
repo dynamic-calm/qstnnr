@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := build
 
-.PHONY: compile
-compile:
-	protoc api/*.proto \
+.PHONY: proto
+proto:
+	protoc pkg/api/*.proto \
         --go_out=. \
         --go-grpc_out=. \
         --go_opt=paths=source_relative \

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.2
-// source: api/qstnnr.proto
+// source: pkg/api/qstnnr.proto
 
 package api
 
@@ -20,9 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Questionnaire_GetQuestions_FullMethodName  = "/qstnnr.Questionnaire/GetQuestions"
-	Questionnaire_SubmitAnswers_FullMethodName = "/qstnnr.Questionnaire/SubmitAnswers"
-	Questionnaire_GetSolutions_FullMethodName  = "/qstnnr.Questionnaire/GetSolutions"
+	Questionnaire_GetQuestions_FullMethodName  = "/api.Questionnaire/GetQuestions"
+	Questionnaire_SubmitAnswers_FullMethodName = "/api.Questionnaire/SubmitAnswers"
+	Questionnaire_GetSolutions_FullMethodName  = "/api.Questionnaire/GetSolutions"
 )
 
 // QuestionnaireClient is the client API for Questionnaire service.
@@ -183,7 +183,7 @@ func _Questionnaire_GetSolutions_Handler(srv interface{}, ctx context.Context, d
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Questionnaire_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "qstnnr.Questionnaire",
+	ServiceName: "api.Questionnaire",
 	HandlerType: (*QuestionnaireServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -200,5 +200,5 @@ var Questionnaire_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/qstnnr.proto",
+	Metadata: "pkg/api/qstnnr.proto",
 }
