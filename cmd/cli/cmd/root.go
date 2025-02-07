@@ -25,8 +25,8 @@ func init() {
 		port: "5974",
 		rootCmd: &cobra.Command{
 			Use:   "qstnnr",
-			Short: "A simple quiz CLI",
-			Long:  `A CLI application for taking quizzes and viewing results.`,
+			Short: "A simple Go quiz CLI",
+			Long:  `A CLI application to check you Go knowledge.`,
 			PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 				if cmd.Parent() != nil && cmd.Parent().Name() == "server" {
 					return nil

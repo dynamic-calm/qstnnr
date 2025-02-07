@@ -36,7 +36,6 @@ func (c *CLI) runTakeQuiz(cmd *cobra.Command, args []string) error {
 			options[j] = opt.Text
 		}
 
-		// Create the selection prompt
 		prompt := promptui.Select{
 			Label: q.Text,
 			Items: options,
@@ -56,7 +55,6 @@ func (c *CLI) runTakeQuiz(cmd *cobra.Command, args []string) error {
 		// Store the answer
 		answers[qstnnr.QuestionID(q.Id)] = qstnnr.OptionID(q.Options[index].Id)
 	}
-	fmt.Println(answers)
 
 	if len(answers) <= 0 {
 		return nil
@@ -92,7 +90,56 @@ func (c *CLI) runTakeQuiz(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("\nYou got %d correct!\n", submitRes.Correct)
-	fmt.Printf("That's better than %d%% of participants!\n", submitRes.BetterThan)
+	fmt.Printf("That's better than %d%% of participants! 🌱\n", submitRes.BetterThan)
+
+	reviewPrompt := promptui.Prompt{
+		Label:     "Would you like to check the solutions",
+		IsConfirm: true,
+	}
+
+	reviewResult, err := reviewPrompt.Run()
+	if err != nil {
+		return fmt.Errorf("prompt failed: %v", err)
+	}
+
+	if reviewResult != "y" && reviewResult != "Y" && reviewResult != "" {
+		return nil
+	}
+
+	for _, solution := range submitRes.Solutions {
+		fmt.Printf("\n%s\n", solution.Question.Text)
+		userAnswer := answers[qstnnr.QuestionID(solution.Question.Id)]
+
+		if userAnswer == qstnnr.OptionID(solution.CorrectOptionId) {
+			// Correct
+			fmt.Printf("\033[32m✓ %s\033[0m\n", solution.CorrectOptionText)
+		} else {
+			// Incorrect
+			originalQ := findQuestion(questions.Questions, solution.Question.Id)
+			userAnswerText := findOptionText(originalQ.Options, int32(userAnswer))
+
+			fmt.Printf("\033[32m✓ Correct: %s\033[0m\n", solution.CorrectOptionText)
+			fmt.Printf("\033[31m✗ Your answer: %s\033[0m\n", userAnswerText)
+		}
+	}
 
 	return nil
+}
+
+func findQuestion(questions []*api.Question, id int32) *api.Question {
+	for _, q := range questions {
+		if q.Id == id {
+			return q
+		}
+	}
+	return nil
+}
+
+func findOptionText(options []*api.Option, id int32) string {
+	for _, opt := range options {
+		if opt.Id == id {
+			return opt.Text
+		}
+	}
+	return "Unknown option"
 }
