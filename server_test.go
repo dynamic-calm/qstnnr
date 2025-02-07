@@ -8,6 +8,7 @@ import (
 
 	"github.com/mateopresacastro/qstnnr"
 	"github.com/mateopresacastro/qstnnr/api"
+	"github.com/mateopresacastro/qstnnr/pkg/qservice"
 	"github.com/mateopresacastro/qstnnr/pkg/store"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -79,7 +80,7 @@ func TestServer(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	service := qstnnr.NewQstnnrService(s)
+	service := qservice.NewQstnnrService(s)
 
 	cfg := &qstnnr.ServerConfig{
 		Logger:  slog.Default(),

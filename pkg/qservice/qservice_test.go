@@ -1,9 +1,9 @@
-package qstnnr_test
+package qservice_test
 
 import (
 	"testing"
 
-	"github.com/mateopresacastro/qstnnr"
+	"github.com/mateopresacastro/qstnnr/pkg/qservice"
 	"github.com/mateopresacastro/qstnnr/pkg/store"
 )
 
@@ -55,7 +55,7 @@ func TestService(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	service := qstnnr.NewQstnnrService(s)
+	service := qservice.NewQstnnrService(s)
 
 	t.Run("should get questions", func(t *testing.T) {
 		qs, err := service.GetQuestions()
@@ -178,7 +178,7 @@ func TestService(t *testing.T) {
 			999: 1, // Invalid question ID
 		}
 		_, err := service.SubmitAnswers(answers)
-		if _, ok := err.(qstnnr.ServiceError); !ok {
+		if _, ok := err.(qservice.ServiceError); !ok {
 			t.Fatalf("error not correcet type")
 		}
 	})

@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"sync"
 
+	"github.com/mateopresacastro/qstnnr/pkg/qservice"
 	"github.com/mateopresacastro/qstnnr/pkg/store"
 	"google.golang.org/grpc"
 )
@@ -30,7 +31,7 @@ func Run(
 		return err
 	}
 
-	service := NewQstnnrService(store)
+	service := qservice.NewQstnnrService(store)
 	logger := slog.New(slog.NewJSONHandler(output, &slog.HandlerOptions{
 		Level: parseLogLevel(getenv("LOG_LEVEL")),
 	}))

@@ -1,4 +1,4 @@
-package qstnnr
+package qservice
 
 import (
 	"math"
@@ -30,6 +30,11 @@ type SubmitResult struct {
 // SubmitResult contains quiz submission results and ranking.
 type ServiceError struct {
 	error
+}
+
+// Unwrap makes it so that we can access to the inner error even if is private.
+func (se ServiceError) Unwrap() error {
+	return se.error
 }
 
 // NewQstnnrService creates a new questionnaire service.
