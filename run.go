@@ -13,6 +13,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+const defaultPort = "5974"
+
 func Run(
 	ctx context.Context,
 	getenv func(string) string,
@@ -82,7 +84,12 @@ func Run(
 	}
 
 	server, err := NewServer(cfg)
-	ln, err := net.Listen("tcp", ":"+getenv("PORT"))
+
+	port := getenv("PORT")
+	if port == "" {
+		port = defaultPort
+	}
+	ln, err := net.Listen("tcp", ":"+port)
 
 	go func() {
 		logger.Info("listening", "port", getenv("PORT"))

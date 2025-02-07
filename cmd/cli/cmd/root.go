@@ -14,35 +14,49 @@ type CLI struct {
 	conn    *grpc.ClientConn
 	client  api.QuestionnaireClient
 	rootCmd *cobra.Command
+	port    string
 }
 
 var cli *CLI
 
 func init() {
 	cli = &CLI{
+		port: "5974",
 		rootCmd: &cobra.Command{
 			Use:   "qstnnr",
 			Short: "A simple quiz CLI",
 			Long:  `A CLI application for taking quizzes and viewing results.`,
 			PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+				if cmd.Parent() != nil && cmd.Parent().Name() == "server" {
+					return nil
+				}
 				return cli.connect()
 			},
 			PersistentPostRunE: func(cmd *cobra.Command, args []string) error {
+				if cmd.Parent() != nil && cmd.Parent().Name() == "server" {
+					return nil
+				}
 				return cli.close()
 			},
 		},
 	}
-
+	cli.rootCmd.PersistentFlags().StringVarP(&cli.port, "port", "p", cli.port, "Port to connect to")
 	cli.addCommands()
 }
 
 func (c *CLI) connect() error {
-	// TODO port
-	conn, err := grpc.NewClient("localhost:5974", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = c.port
+	}
+
+	conn, err := grpc.NewClient(
+		fmt.Sprintf("localhost:%s", port),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
 	if err != nil {
 		return err
 	}
-
 	c.conn = conn
 	c.client = api.NewQuestionnaireClient(conn)
 	return nil

@@ -10,7 +10,8 @@ import (
 )
 
 func (c *CLI) newServerStartCommand() *cobra.Command {
-	return &cobra.Command{
+	var verbose bool
+	cmd := &cobra.Command{
 		Use:   "start",
 		Short: "Start the qstnnr server",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -18,7 +19,6 @@ func (c *CLI) newServerStartCommand() *cobra.Command {
 				return fmt.Errorf("server is already running")
 			}
 
-			// Get the executable directory
 			ex, err := os.Executable()
 			if err != nil {
 				return fmt.Errorf("failed to get executable path: %v", err)
@@ -26,23 +26,36 @@ func (c *CLI) newServerStartCommand() *cobra.Command {
 			binDir := filepath.Dir(ex)
 			serverBin := filepath.Join(binDir, "server")
 
-			// Start the server as a background process
 			serverCmd := exec.Command(serverBin)
-			serverCmd.Stdout = os.Stdout
-			serverCmd.Stderr = os.Stderr
+			env := os.Environ()
+			if !verbose {
+				env = append(env, "LOG_LEVEL=error")
+			}
+			serverCmd.Env = env
+
+			if verbose {
+				serverCmd.Stdout = os.Stdout
+				serverCmd.Stderr = os.Stderr
+			}
 
 			if err := serverCmd.Start(); err != nil {
 				return fmt.Errorf("failed to start server: %v", err)
 			}
 
-			// Write PID to file
 			pidFile := filepath.Join(os.TempDir(), "qstnnr-server.pid")
 			if err := os.WriteFile(pidFile, []byte(fmt.Sprint(serverCmd.Process.Pid)), 0644); err != nil {
 				return fmt.Errorf("failed to write PID file: %v", err)
 			}
 
-			fmt.Println("Server started successfully")
+			port := os.Getenv("PORT")
+			if port == "" {
+				port = c.port
+			}
+			fmt.Printf("Server started on port %s (PID: %d)\n", port, serverCmd.Process.Pid)
 			return nil
 		},
 	}
+
+	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Show server logs")
+	return cmd
 }
