@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/mateopresacastro/qstnnr/api"
+	"github.com/mateopresacastro/qstnnr/cmd/cli/cmd/server"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -78,5 +79,5 @@ func Execute() {
 
 func (c *CLI) addCommands() {
 	c.rootCmd.AddCommand(c.newTakeCommand())
-	c.rootCmd.AddCommand(c.newServerCommand())
+	c.rootCmd.AddCommand(server.NewServerCommand())
 }

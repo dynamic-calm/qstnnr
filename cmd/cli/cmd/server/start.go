@@ -1,4 +1,4 @@
-package cmd
+package server
 
 import (
 	"fmt"
@@ -9,7 +9,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func (c *CLI) newServerStartCommand() *cobra.Command {
+const defaultPort = "5974"
+
+func NewServerStartCommand() *cobra.Command {
 	var verbose bool
 	cmd := &cobra.Command{
 		Use:   "start",
@@ -49,7 +51,7 @@ func (c *CLI) newServerStartCommand() *cobra.Command {
 
 			port := os.Getenv("PORT")
 			if port == "" {
-				port = c.port
+				port = defaultPort
 			}
 			fmt.Printf("Server started on port %s (PID: %d)\n", port, serverCmd.Process.Pid)
 			return nil

@@ -1,4 +1,4 @@
-package cmd
+package server
 
 import (
 	"os"
@@ -9,17 +9,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func (c *CLI) newServerCommand() *cobra.Command {
+func NewServerCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "server",
 		Short: "Manage the qstnnr server",
 		Long:  `Commands to start, stop, restart and check status of the qstnnr server`,
 	}
 
-	cmd.AddCommand(c.newServerStartCommand())
-	cmd.AddCommand(c.newServerStopCommand())
-	cmd.AddCommand(c.newServerStatusCommand())
-	cmd.AddCommand(c.newServerRestartCommand())
+	cmd.AddCommand(NewServerStartCommand())
+	cmd.AddCommand(NewServerStopCommand())
+	cmd.AddCommand(NewServerStatusCommand())
+	cmd.AddCommand(NewServerRestartCommand())
 
 	return cmd
 }
