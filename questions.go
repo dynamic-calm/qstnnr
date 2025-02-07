@@ -58,7 +58,7 @@ func getInitialData() InitialData {
 			Options: map[OptionID]Option{
 				1: {ID: 1, Text: "var x interface{}"},
 				2: {ID: 2, Text: "var x any"},
-				3: {ID: 3, Text: "Both A and B are correct"},
+				3: {ID: 3, Text: "Both both interface{} and any are correct"},
 				4: {ID: 4, Text: "var x object"},
 			},
 		},
