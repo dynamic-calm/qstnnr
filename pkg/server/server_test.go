@@ -1,4 +1,4 @@
-package qstnnr_test
+package server_test
 
 import (
 	"context"
@@ -6,9 +6,9 @@ import (
 	"net"
 	"testing"
 
-	"github.com/mateopresacastro/qstnnr"
 	"github.com/mateopresacastro/qstnnr/api"
 	"github.com/mateopresacastro/qstnnr/pkg/qservice"
+	"github.com/mateopresacastro/qstnnr/pkg/server"
 	"github.com/mateopresacastro/qstnnr/pkg/store"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -82,12 +82,12 @@ func TestServer(t *testing.T) {
 
 	service := qservice.New(s)
 
-	cfg := &qstnnr.ServerConfig{
+	cfg := &server.Config{
 		Logger:  slog.Default(),
 		Service: service,
 	}
 
-	server, err := qstnnr.NewServer(cfg)
+	server, err := server.New(cfg)
 	if err != nil {
 		t.Fatal(err)
 	}

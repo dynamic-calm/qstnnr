@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/mateopresacastro/qstnnr/pkg/qservice"
+	"github.com/mateopresacastro/qstnnr/pkg/server"
 	"github.com/mateopresacastro/qstnnr/pkg/store"
 	"google.golang.org/grpc"
 )
@@ -36,12 +37,12 @@ func Run(
 		Level: parseLogLevel(getenv("LOG_LEVEL")),
 	}))
 
-	cfg := &ServerConfig{
+	cfg := &server.Config{
 		Logger:  logger,
 		Service: service,
 	}
 
-	server, err := NewServer(cfg)
+	server, err := server.New(cfg)
 	port := getenv("PORT")
 	if port == "" {
 		port = DefaultPort

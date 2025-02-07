@@ -1,4 +1,4 @@
-package qstnnr
+package server
 
 import (
 	"context"
@@ -27,13 +27,13 @@ type server struct {
 }
 
 // ServerConfig holds the configuration for the gRPC server.
-type ServerConfig struct {
+type Config struct {
 	Logger  *slog.Logger
 	Service qservice.QService
 }
 
-// NewServer creates a new gRPC server with the given configuration.
-func NewServer(cfg *ServerConfig) (*grpc.Server, error) {
+// New creates a new gRPC server with the given configuration.
+func New(cfg *Config) (*grpc.Server, error) {
 	server := &server{service: cfg.Service, logger: cfg.Logger}
 	grpcsrv := grpc.NewServer()
 	api.RegisterQuestionnaireServer(grpcsrv, server)
