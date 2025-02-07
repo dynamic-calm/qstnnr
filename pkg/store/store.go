@@ -75,9 +75,9 @@ type StoreError struct {
 	error
 }
 
-// NewMemoryStore initiates an implementation of the Store interface
+// NewInMemory initiates an implementation of the Store interface
 // with the given data.
-func NewMemoryStore(data InitialData) (Store, error) {
+func NewInMemory(data InitialData) (Store, error) {
 	if data.Questions == nil || data.Solutions == nil {
 		return nil, StoreError{errors.New("questions and solutions maps cannot be nil")}
 	}

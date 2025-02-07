@@ -26,7 +26,7 @@ func Run(
 	defer cancel()
 
 	data := getInitialData()
-	store, err := store.NewMemoryStore(data)
+	store, err := store.NewInMemory(data)
 	if err != nil {
 		return err
 	}

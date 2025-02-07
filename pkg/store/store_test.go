@@ -47,13 +47,13 @@ func TestStore(t *testing.T) {
 	}
 
 	t.Run("should fail with nil data", func(t *testing.T) {
-		_, err := store.NewMemoryStore(store.InitialData{})
+		_, err := store.NewInMemory(store.InitialData{})
 		if err == nil {
 			t.Fatal("expected error with nil data")
 		}
 	})
 
-	s, err := store.NewMemoryStore(store.InitialData{
+	s, err := store.NewInMemory(store.InitialData{
 		Questions: questions,
 		Solutions: solutions,
 	})

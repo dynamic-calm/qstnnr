@@ -75,7 +75,7 @@ func TestServer(t *testing.T) {
 		Solutions: solutions,
 	}
 
-	s, err := store.NewMemoryStore(data)
+	s, err := store.NewInMemory(data)
 	if err != nil {
 		t.Fatal(err)
 	}

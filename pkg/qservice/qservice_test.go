@@ -48,7 +48,7 @@ func TestService(t *testing.T) {
 		3: 2, // 4
 	}
 
-	s, err := store.NewMemoryStore(store.InitialData{
+	s, err := store.NewInMemory(store.InitialData{
 		Questions: questions,
 		Solutions: solutions,
 	})
