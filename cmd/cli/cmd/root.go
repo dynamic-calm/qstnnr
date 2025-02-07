@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mateopresacastro/qstnnr/api"
 	"github.com/mateopresacastro/qstnnr/cmd/cli/cmd/server"
+	"github.com/mateopresacastro/qstnnr/pkg/api"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/mateopresacastro/qstnnr/api"
+	"github.com/mateopresacastro/qstnnr/pkg/api"
 	"github.com/mateopresacastro/qstnnr/pkg/qerr"
 	"github.com/mateopresacastro/qstnnr/pkg/qservice"
 	"github.com/mateopresacastro/qstnnr/pkg/store"

@@ -2,9 +2,9 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 
-package qstnnr;
+package api;
 
-option go_package = "github.com/mateopresacastro/qstnnr/api";
+option go_package = "github.com/mateopresacastro/qstnnr/pkg/api";
 
 service Questionnaire {
     // GetQuestions gets all the questions and options for each.

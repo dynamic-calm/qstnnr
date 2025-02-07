@@ -6,7 +6,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/mateopresacastro/qstnnr/api"
+	"github.com/mateopresacastro/qstnnr/pkg/api"
 	"github.com/mateopresacastro/qstnnr/pkg/qservice"
 	"github.com/mateopresacastro/qstnnr/pkg/server"
 	"github.com/mateopresacastro/qstnnr/pkg/store"

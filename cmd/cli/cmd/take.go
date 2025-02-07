@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/manifoldco/promptui"
-	"github.com/mateopresacastro/qstnnr/api"
+	"github.com/mateopresacastro/qstnnr/pkg/api"
 	"github.com/mateopresacastro/qstnnr/pkg/store"
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/types/known/emptypb"
