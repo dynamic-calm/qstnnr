@@ -58,7 +58,7 @@ func TestService(t *testing.T) {
 	service := qservice.New(s)
 
 	t.Run("should get questions", func(t *testing.T) {
-		qs, err := service.GetQuestions()
+		qs, err := service.Questions()
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -9,9 +9,9 @@ import (
 
 // QService defines the questionnaire operations.
 type QService interface {
-	GetQuestions() (map[store.QuestionID]store.Question, error)
+	Questions() (map[store.QuestionID]store.Question, error)
 	SubmitAnswers(answers map[store.QuestionID]store.OptionID) (*SubmitResult, error)
-	GetSolutions() (map[store.QuestionID]store.OptionID, error)
+	Solutions() (map[store.QuestionID]store.OptionID, error)
 }
 
 // QstnnrService implements QService using a persistent store.
@@ -43,7 +43,7 @@ func New(store store.Store) QService {
 }
 
 // GetQuestions returns all available questions.
-func (qs *QstnnrService) GetQuestions() (map[store.QuestionID]store.Question, error) {
+func (qs *QstnnrService) Questions() (map[store.QuestionID]store.Question, error) {
 	questions, err := qs.store.Questions()
 	if err != nil {
 		if _, ok := err.(store.StoreError); !ok {
@@ -136,7 +136,7 @@ func (qs *QstnnrService) stats(score store.Score) (store.Stat, error) {
 }
 
 // GetSolutions returns the correct answers for all questions.
-func (qs *QstnnrService) GetSolutions() (map[store.QuestionID]store.OptionID, error) {
+func (qs *QstnnrService) Solutions() (map[store.QuestionID]store.OptionID, error) {
 	solutions, err := qs.store.Solutions()
 	if err != nil {
 		if _, ok := err.(store.StoreError); !ok {

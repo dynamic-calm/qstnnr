@@ -42,7 +42,7 @@ func NewServer(cfg *ServerConfig) (*grpc.Server, error) {
 
 // GetQuestions returns all questions with their options.
 func (s *server) GetQuestions(ctx context.Context, _ *emptypb.Empty) (*api.GetQuestionsResponse, error) {
-	qsts, err := s.service.GetQuestions()
+	qsts, err := s.service.Questions()
 	if err != nil {
 		return nil, s.handleError(err)
 	}
@@ -84,7 +84,7 @@ func (s *server) SubmitAnswers(ctx context.Context, req *api.SubmitAnswersReques
 
 // GetSolutions returns the correct answers for all questions.
 func (s *server) GetSolutions(ctx context.Context, req *emptypb.Empty) (*api.GetSolutionsResponse, error) {
-	solutions, err := s.service.GetSolutions()
+	solutions, err := s.service.Solutions()
 	if err != nil {
 		return nil, s.handleError(err)
 	}
@@ -99,7 +99,7 @@ func (s *server) GetSolutions(ctx context.Context, req *emptypb.Empty) (*api.Get
 
 // processSolutions converts internal solution format to API response format.
 func (s *server) processSolutions(ss map[store.QuestionID]store.OptionID) ([]*api.Solution, error) {
-	qsts, err := s.service.GetQuestions()
+	qsts, err := s.service.Questions()
 	if err != nil {
 		return nil, err
 	}
