@@ -1,6 +1,7 @@
 package qservice_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/mateopresacastro/qstnnr/pkg/qservice"
@@ -182,4 +183,84 @@ func TestService(t *testing.T) {
 			t.Fatalf("error not correcet type")
 		}
 	})
+
+	t.Run("should handle store errors in Solutions()", func(t *testing.T) {
+		errStore := &errorStore{solutionsErr: store.StoreError{}}
+		service := qservice.New(errStore)
+		_, err := service.Solutions()
+		if _, ok := err.(qservice.ServiceError); !ok {
+			t.Fatal("expected ServiceError")
+		}
+	})
+
+	t.Run("should handle store errors in SaveScore", func(t *testing.T) {
+		errStore := &errorStore{
+			saveScoreErr:  store.StoreError{},
+			questionsData: questions,
+			solutionsData: solutions,
+		}
+		service := qservice.New(errStore)
+		answers := map[store.QuestionID]store.OptionID{
+			1: 2,
+			2: 2,
+			3: 2,
+		}
+		_, err := service.SubmitAnswers(answers)
+		if _, ok := err.(qservice.ServiceError); !ok {
+			t.Fatal("expected ServiceError")
+		}
+	})
+
+	t.Run("should handle store errors in stats calculation", func(t *testing.T) {
+		errStore := &errorStore{
+			allScoresErr:  store.StoreError{},
+			questionsData: questions,
+			solutionsData: solutions,
+		}
+		service := qservice.New(errStore)
+		answers := map[store.QuestionID]store.OptionID{
+			1: 2,
+			2: 2,
+			3: 2,
+		}
+		_, err := service.SubmitAnswers(answers)
+		if _, ok := err.(qservice.ServiceError); !ok {
+			t.Fatal("expected ServiceError")
+		}
+	})
+
+	t.Run("should handle non-store errors", func(t *testing.T) {
+		errStore := &errorStore{questionsErr: errors.New("non-store error")}
+		service := qservice.New(errStore)
+		_, err := service.Questions()
+		if _, ok := err.(qservice.ServiceError); ok {
+			t.Fatal("expected non-ServiceError")
+		}
+	})
+}
+
+type errorStore struct {
+	store.Store
+	questionsErr  error
+	solutionsErr  error
+	saveScoreErr  error
+	allScoresErr  error
+	questionsData map[store.QuestionID]store.Question
+	solutionsData map[store.QuestionID]store.OptionID
+}
+
+func (s *errorStore) Questions() (map[store.QuestionID]store.Question, error) {
+	return nil, s.questionsErr
+}
+
+func (s *errorStore) Solutions() (map[store.QuestionID]store.OptionID, error) {
+	return nil, s.solutionsErr
+}
+
+func (s *errorStore) SaveScore(score store.Score) error {
+	return s.saveScoreErr
+}
+
+func (s *errorStore) AllScores() ([]store.Score, error) {
+	return nil, s.allScoresErr
 }
