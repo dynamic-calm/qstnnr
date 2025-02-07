@@ -1,4 +1,3 @@
-// cmd/cli/cmd/root.go
 package cmd
 
 import (
@@ -65,4 +64,5 @@ func Execute() {
 
 func (c *CLI) addCommands() {
 	c.rootCmd.AddCommand(c.newTakeCommand())
+	c.rootCmd.AddCommand(c.newServerCommand())
 }

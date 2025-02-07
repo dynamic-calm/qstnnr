@@ -1,4 +1,3 @@
-// cmd/cli/cmd/take.go
 package cmd
 
 import (
