@@ -6,10 +6,9 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"github.com/mateopresacastro/qstnnr"
 	"github.com/spf13/cobra"
 )
-
-const defaultPort = "5974"
 
 func NewServerStartCommand() *cobra.Command {
 	var verbose bool
@@ -51,7 +50,7 @@ func NewServerStartCommand() *cobra.Command {
 
 			port := os.Getenv("PORT")
 			if port == "" {
-				port = defaultPort
+				port = qstnnr.DefaultPort
 			}
 			fmt.Printf("Server started on port %s (PID: %d)\n", port, serverCmd.Process.Pid)
 			return nil
