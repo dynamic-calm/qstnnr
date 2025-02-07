@@ -38,7 +38,7 @@ func (se ServiceError) Unwrap() error {
 }
 
 // NewQstnnrService creates a new questionnaire service.
-func NewQstnnrService(store store.Store) QService {
+func New(store store.Store) QService {
 	return &QstnnrService{store: store}
 }
 

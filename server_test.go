@@ -80,7 +80,7 @@ func TestServer(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	service := qservice.NewQstnnrService(s)
+	service := qservice.New(s)
 
 	cfg := &qstnnr.ServerConfig{
 		Logger:  slog.Default(),

@@ -31,7 +31,7 @@ func Run(
 		return err
 	}
 
-	service := qservice.NewQstnnrService(store)
+	service := qservice.New(store)
 	logger := slog.New(slog.NewJSONHandler(output, &slog.HandlerOptions{
 		Level: parseLogLevel(getenv("LOG_LEVEL")),
 	}))
