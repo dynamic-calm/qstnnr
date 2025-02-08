@@ -54,7 +54,7 @@ To run the quiz run `qstnnr server start` and then `qstnnr take`:
 Server started on port 4000 (PID: 12152)
 ```
 
-```bash
+```console
 ➜ bin/qstnnr take
 Question 1 of 10
 Use the arrow keys to navigate: ↓ ↑ → ←
@@ -150,8 +150,8 @@ What is the zero value for a pointer in Go?
 │ ├── server/ # gRPC server implementation
 │ └── store/ # Data storage
 ├── Makefile # Build and development commands
-├── questions.go          # Quiz content and initial data
-└── run.go               # Main application setup and server initialization
+├── questions.go # Quiz content and initial data
+└── run.go # Main application setup and server initialization
 ```
 
 ## Features in Detail
