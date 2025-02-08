@@ -99,7 +99,7 @@ func (c *CLI) runTakeQuiz(cmd *cobra.Command, args []string) error {
 
 	reviewResult, err := reviewPrompt.Run()
 	if err != nil {
-		return fmt.Errorf("prompt failed: %v", err)
+		return nil
 	}
 
 	if reviewResult != "y" && reviewResult != "Y" && reviewResult != "" {
