@@ -199,11 +199,11 @@ What is the zero value for a pointer in Go?
 ## Running
 
 ```bash
-make start-server
+make start-server # Start the server
 ```
 
 ```bash
-make start-cli
+make start-cli # Start the cli with the take command
 ```
 
 ### Building
