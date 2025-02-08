@@ -12,11 +12,51 @@ A command-line quiz application for a take home assignment built with `Go`, feat
 ## Technical Stack
 
 - Backend: `Go`
-- `API`: `gRPC` with `Protocol Buffers`ß
+- `API`: `gRPC` with `Protocol Buffers`
 - Storage: In-memory
 - CLI Framework: `Cobra`
 - Error Handling: Domain-specific error types with stack traces
 - Testing: Unit and integration tests
+
+## Design Decisions
+
+- `gRPC`: I prefer `gRPC` over `REST` for a couple reasons:
+  - Development experience
+  - Schema first approach. The `.proto` file are the source of truth. In a sense, similar to `GraphQL`.
+  - Language agnostic
+  - Performance
+  - Growing ecosystem
+  - Used by `Kubernetes`, `Etcd`, `Cockroach DB`, etc.
+- Design:
+  - The `API` or server layer (`pkg/server` and `pkg/api` [proto]) processes the requests data to and from the service layer.
+  - Service layer (`pkg/qservice`) has te business logic and queries the `store`.
+  - Store layer interacts with the in-memory database
+  - `run.go` starts off the `server`.
+  - Minimal `main` functions.
+- Testing:
+  - Tests per package
+  - Integration test
+  - E2E test
+- Errors:
+
+  - For the error design I opted to follow the opinionated approach lied out in the book [Concurrency in Go by Katherine Cox-Buday](https://www.oreilly.com/library/view/concurrency-in-go/9781491941294/).
+  - If an error is a known edge case, you return the error wrapped on a custom error type, if not, you return the error as is. E.g:
+
+    ```go
+        solutions, err := qs.store.Solutions()
+        if err != nil {
+            if _, ok := err.(store.StoreError); !ok {
+                // Bug
+                return nil, err
+            }
+        // Known edge case. Wrap it and return.
+        return nil, ServiceError{qerr.Wrap(err, qerr.Internal, "failed to get solutions")}
+    }
+    ```
+
+- CLI:
+  - `Cobra` as specified
+  - `promptui` for interactivity
 
 ## Getting Started
 
