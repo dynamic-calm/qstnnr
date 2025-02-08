@@ -24,7 +24,7 @@ func (c *CLI) runTakeQuiz(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
 	questions, err := c.client.GetQuestions(ctx, &emptypb.Empty{})
 	if err != nil {
-		return err
+		return fmt.Errorf("Something went wrong when trying to connect to the server. Did you run `qstnnr server start`?: %w", err)
 	}
 
 	answers := make(map[store.QuestionID]store.OptionID)
@@ -99,7 +99,7 @@ func (c *CLI) runTakeQuiz(cmd *cobra.Command, args []string) error {
 
 	reviewResult, err := reviewPrompt.Run()
 	if err != nil {
-		return fmt.Errorf("prompt failed: %v", err)
+		return nil
 	}
 
 	if reviewResult != "y" && reviewResult != "Y" && reviewResult != "" {
