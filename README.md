@@ -194,32 +194,17 @@ What is the zero value for a pointer in Go?
 └── run.go # Main application setup and server initialization
 ```
 
-## Features in Detail
-
-### Quiz Taking Flow
-
-- User requests questions through CLI
-- Server returns questions with multiple choice options
-- User submits answers
-- Server evaluates answers and returns:
-  - Number of correct answers
-  - Comparison with other participants
-  - Correct solutions
-
-### Error Handling
-
-- Domain-specific error types with stack traces
-- Graceful error propagation through layers
-- Proper `gRPC` status code mapping
-
-### Configuration
-
-Environment variables:
-
-- `PORT`: Server port (default: `5974`)
-- `LOG_LEVEL`: Logging level (`DEBUG`, `INFO`, `WARN`, `ERROR`)
-
 ## Development
+
+## Running
+
+```bash
+make start-server
+```
+
+```bash
+make start-cli
+```
 
 ### Building
 
@@ -236,9 +221,6 @@ make build-cli # Build CLI only
 ```
 
 ### Testing
-
-- Comprehensive test coverage
-- Integration tests for `gRPC` server
 
 ```bash
 make test # Run all tests with coverage and race detection

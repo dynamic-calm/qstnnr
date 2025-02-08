@@ -25,3 +25,11 @@ build-cli:
 
 .PHONY: build
 build: build-server build-cli
+
+.PHONY: start-server
+start-server:
+	go run cmd/server/main.go
+
+.PHONY: start-cli
+start-cli:
+	go run cmd/cli/main.go take
