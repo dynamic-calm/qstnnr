@@ -41,7 +41,6 @@ func init() {
 			},
 		},
 	}
-	cli.rootCmd.PersistentFlags().StringVarP(&cli.port, "port", "p", cli.port, "Port to connect to")
 	cli.addCommands()
 }
 
@@ -56,7 +55,7 @@ func (c *CLI) connect() error {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("Something went wrong when trying to connect to the server. Did you run `qstnnr server start`?: %w", err)
 	}
 	c.conn = conn
 	c.client = api.NewQuestionnaireClient(conn)
