@@ -33,6 +33,10 @@ A command-line quiz application for a take home assignment built with `Go`, feat
   - Store layer interacts with the in-memory database
   - `run.go` starts off the `server`.
   - Minimal `main` functions.
+- Testing:
+  - Tests per package
+  - Integration test
+  - E2E test
 - Errors:
 
   - For the error design I opted to follow the opinionated approach lied out in the book [Concurrency in Go by Katherine Cox-Buday](https://www.oreilly.com/library/view/concurrency-in-go/9781491941294/).

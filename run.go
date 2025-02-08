@@ -43,12 +43,20 @@ func Run(
 	}
 
 	server, err := server.New(cfg)
+	if err != nil {
+		return fmt.Errorf("creating server: %w", err)
+	}
+
 	port := getenv("PORT")
 	if port == "" {
 		port = DefaultPort
 	}
 
 	ln, err := net.Listen("tcp", ":"+port)
+	if err != nil {
+		return fmt.Errorf("listening on port %s: %w", port, err)
+	}
+
 	go func() {
 		logger.Info("listening", "port", getenv("PORT"))
 		if err := server.Serve(ln); err != nil && err != grpc.ErrServerStopped {
