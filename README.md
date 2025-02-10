@@ -196,8 +196,6 @@ What is the zero value for a pointer in Go?
 
 ## Development
 
-## Running
-
 ```bash
 make start-server # Start the server
 ```
