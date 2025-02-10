@@ -39,7 +39,7 @@ A command-line quiz application for a take home assignment built with `Go`, feat
   - E2E test
 - Errors:
 
-  - For the error design I opted to follow the opinionated approach lied out in the book [Concurrency in Go by Katherine Cox-Buday](https://www.oreilly.com/library/view/concurrency-in-go/9781491941294/).
+  - For the error design I opted to follow the opinionated approach from the book [Concurrency in Go by Katherine Cox-Buday](https://www.oreilly.com/library/view/concurrency-in-go/9781491941294/).
   - If an error is a known edge case, you return the error wrapped on a custom error type, if not, you return the error as is. E.g:
 
     ```go
